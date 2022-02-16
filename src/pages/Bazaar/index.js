@@ -9,6 +9,7 @@ import styled from "styled-components";
 import { orderStateInString, orderStates } from "utils/order";
 import List from "./components/List";
 import PageHeader from "components/PageHeader";
+import { bazaars } from "config/assets";
 
 const { Option } = Select;
 const { Text } = Typography;
@@ -34,39 +35,60 @@ const Actions = styled(Row)`
     }
 `;
 
-const defaultFilters = [
-    orderStates.Placed,
-];
+const defaultFilters = {
+    sourceAssets: [...bazaars.GOLD.assets],
+    states: [orderStates.Placed],
+    withExpireds: false,
+};
 
 function Bazaar() {
     const { account } = useWeb3React();
     const { isLoading: isProfileLoading } = useProfile();
     const { t } = useTranslation();
     const { orders, isLoading: isOrdersLoading } = useOrders();
-    const [filters, setFilters] = useState({ states: defaultFilters });
+    const [filters, setFilters] = useState(defaultFilters);
     const { refresh, setAutoRefresh, autoRefresh } = useFetchOrders(true, filters);
 
     useEffect(() => {
         refresh();
     }, [filters])
 
-    const onFiltersChange = (values) => {
+    const onStatesChanged = (values) => {
         setFilters(prev => ({ ...prev, states: values }));
+    }
+
+    const onBazaarChanged = (value) => {
+        setFilters(prev => ({ ...prev, sourceAssets: bazaars[value].assets }));
     }
 
     return (
         <Wrapper>
-            <PageHeader title={t('Online Transactions')} subtitle={t('Transactions that are live and you can buy with tiny fee!')} />
+            <PageHeader title={t('Online Transactions')} subtitle={t('Transactions that are live and you can buy with tiny fee')} />
             <Actions align="center" gutter={10}>
                 <Col xl={16} lg={22} md={22} sm={24} xs={24}>
+                    <div>
+                        <Text type="secondary">{t('Bazaar')}: </Text>
+                        <Select
+                            style={{ minWidth: '100px' }}
+                            showSearch={false}
+                            defaultValue={bazaars.GOLD.id}
+                            onChange={onBazaarChanged}
+                        >
+                            {
+                                Object.entries(bazaars).map(([id, b]) => (
+                                    <Option key={b.id} value={b.id}>{b.icon} {t(b.symbol)}</Option>
+                                ))
+                            }
+                        </Select>
+                    </div>
                     <div>
                         <Text type="secondary">{t('State')}: </Text>
                         <Select
                             style={{ width: '300px' }}
                             mode="multiple"
                             showSearch={false}
-                            defaultValue={defaultFilters}
-                            onChange={onFiltersChange}
+                            defaultValue={defaultFilters.states}
+                            onChange={onStatesChanged}
                             maxTagCount='responsive'
                         >
                             {
@@ -91,7 +113,7 @@ function Bazaar() {
                 </Col>
             </Actions>
             <List
-                isLoading={account && isProfileLoading || isOrdersLoading}
+                isLoading={(account && isProfileLoading) || isOrdersLoading}
                 items={orders}
                 refresh={refresh}
             />

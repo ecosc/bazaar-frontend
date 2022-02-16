@@ -1,4 +1,8 @@
 import { useWeb3React } from "@web3-react/core";
+import {
+    ArrowLeftOutlined,
+    ArrowRightOutlined,
+} from '@ant-design/icons';
 import { Button, Card, Col, Form, Input, message } from "antd";
 import ConnectWalletButton from "components/ConnectWalletButton";
 import { useProfileContract } from "hooks/useContracts";
@@ -10,6 +14,7 @@ import { useDispatch } from 'react-redux';
 import { setProfile } from "state/profile";
 import styled from "styled-components";
 import CreateProfileButton from "components/CreateProfileButton";
+import { getDirection } from "localization";
 
 const ProfileWrapper = styled.div`
     width: 100%;
@@ -53,6 +58,8 @@ function EditProfile() {
     const dispatch = useDispatch();
     const [isTouched, setIsTouched] = useState(false);
 
+    const dir = getDirection();
+
     useEffect(() => {
         if (account && hasProfile) {
             form.setFieldsValue({
@@ -69,7 +76,7 @@ function EditProfile() {
 
         profileContract.updateAccount(name, contact).then(r => {
             message.success(t('Account updated'));
-            dispatch(setProfile({name,contact}));
+            dispatch(setProfile({ name, contact }));
             navigate('/profile');
         }).catch(e => {
             setIsLoading(false);
@@ -79,7 +86,7 @@ function EditProfile() {
 
     const handleOnChange = () => {
         const values = form.getFieldsValue();
-        
+
         if (values.name != profile.name || values.contact != profile.contact) {
             setIsTouched(true);
         } else {
@@ -87,13 +94,31 @@ function EditProfile() {
         }
     }
 
+    const backButton = () => {
+        const icon = dir === 'rtl' ? <ArrowLeftOutlined /> : <ArrowRightOutlined />;
+
+        return <Button onClick={() => navigate(-1)} icon={icon} type="primary" shape="circle" />
+    }
+
     return (
         <ProfileWrapper>
             <Col span={8} xl={10} lg={16} md={16} sm={24} xs={24}>
-                <ProfileCard title={t('Edit Profile')} bordered={false} loading={isProfileLoading}>
+                <ProfileCard
+                    title={t('Edit Profile')}
+                    bordered={false}
+                    loading={isProfileLoading}
+                    extra={backButton()}
+                >
                     {
                         !account ? <ConnectWalletButton /> : !hasProfile ? <CreateProfileButton /> : (
-                            <UpdateAccountForm form={form} name="create-account-form" onFinish={handleOnSubmit} onChange={handleOnChange}>
+                            <UpdateAccountForm
+                                form={form}
+                                name="create-account-form"
+                                onFinish={handleOnSubmit}
+                                onChange={handleOnChange}
+                                layout="vertical"
+                                requiredMark={false}
+                            >
                                 <Form.Item name="name" label={t('Name')} rules={[{ required: true, message: t('name is required') }]}>
                                     <Input className="ltr-input" />
                                 </Form.Item>

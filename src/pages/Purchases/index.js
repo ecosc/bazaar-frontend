@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { orderStateInString, orderStates } from "utils/order";
+import { orderStateInString, orderStateNames, orderStates } from "utils/order";
 import List from "./components/List";
 import PageHeader from "components/PageHeader";
 
@@ -37,7 +37,6 @@ const Actions = styled(Row)`
 
 const defaultFilters = [
     orderStates.Soled,
-    orderStates.Conflict
 ];
 
 function Bazaar() {
@@ -78,7 +77,8 @@ function Bazaar() {
                         >
                             <Option key={0} value={orderStates.Soled}>{t('Bought')}</Option>
                             <Option key={1} value={orderStates.Finished}>{t('Delivered')}</Option>
-                            <Option key={2} value={orderStates.Conflict}>{t('Conflict')}</Option>
+                            <Option key={2} value={orderStates.CancelledByBuyer}>{t(orderStateNames[orderStates.CancelledByBuyer])}</Option>
+                            <Option key={3} value={orderStates.CancelledBySeller}>{t(orderStateNames[orderStates.CancelledBySeller])}</Option>
                         </Select>
                     </div>
                     <div>

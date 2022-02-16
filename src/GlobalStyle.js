@@ -47,6 +47,12 @@ const GlobalStyle = createGlobalStyle`
     `}
   }
 
+  .ant-modal-confirm-btns {
+    ${({ theme }) => theme.dir == 'rtl' && `
+      float: left !important;
+    `}
+  }
+
   .ant-modal-confirm-body > .anticon {
     ${({ theme }) => theme.dir == 'rtl' && `
       float: right !important;
@@ -110,6 +116,7 @@ const GlobalStyle = createGlobalStyle`
 
   .ant-select-selection-item {
     line-height: 52px !important;
+    font-weight: bold;
   }
 
   .ant-card {
@@ -117,7 +124,12 @@ const GlobalStyle = createGlobalStyle`
     border: 1px solid ${({theme}) => theme.colors.border} !important;
   }
 
+  .ant-card-actions {
+    border-radius: 0 0 25px 25px !important;
+  }
+
   .ant-input {
+    font-weight: bold;
     padding: 12px 20px !important;
     font-size: 1rem !important;
     border-radius: 25px !important;

@@ -4,14 +4,14 @@ import { Col, Collapse, Row, Skeleton, Typography, Modal, Space, message, Button
 import styled from "styled-components";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { accountEllipsis, secondsToTime, transformSourceAmount, transformTargetAmount } from "utils/transforms";
-import { calcBuyFee, calcCancellationFee, calcGuaranteeAmount } from 'utils/fees';
+import { accountEllipsis, transformSourceAmount, transformTargetAmount } from "utils/transforms";
+import { calcCancellationFee, calcCloseFee, calcGuaranteeAmount } from 'utils/fees';
 import { useBazaarContract } from 'hooks/useContracts';
 import { timestampInLocale } from 'utils/datetime';
-import { orderStates, orderStateInString } from 'utils/order';
+import { orderStates, orderStateInString, maxDeliveryTime } from 'utils/order';
 import { AddressZero } from '@ethersproject/constants'
-import { getProfile } from 'state/profile/helpers';
 import ProfileInfoButton from 'components/ProfileInfoButton';
+import Timer from 'components/Timer';
 
 const { Text } = Typography;
 const { confirm } = Modal;
@@ -53,11 +53,33 @@ function List({ isLoading, items, refresh }) {
         return Math.floor(item.deadline - (now / 1000));
     }
 
-    const isItemCancellable = (item) => {
+    const timeToCancel = (item) => {
+        const now = Date.now();
+
+        return Math.floor(item.createdAt + maxDeliveryTime - (now / 1000));
+    }
+
+    const isItemClosable = (item) => {
         if (remainingTime(item) <= 0) {
             return false;
         }
 
+        return item.state == orderStates.Placed;
+    }
+
+    const isInCancellableState = (item) => {
+        return item.state == orderStates.Soled;
+    }
+
+    const isItemCancellable = (item) => {
+        if (timeToCancel(item) > 0) {
+            return false;
+        }
+
+        return isInCancellableState(item);
+    }
+
+    const isInWithdrawableState = (item) => {
         return item.state == orderStates.Placed;
     }
 
@@ -66,7 +88,7 @@ function List({ isLoading, items, refresh }) {
             return false;
         }
 
-        return item.state == orderStates.Placed;
+        return isInWithdrawableState(item);
     }
 
     const renderSkeleton = () => {
@@ -113,7 +135,35 @@ function List({ isLoading, items, refresh }) {
         );
     }
 
-    function renderConfirmContent(item) {
+    function renderConfirmCloseContent(item) {
+        const {
+            targetAmount,
+            targetAsset
+        } = item;
+
+        const closeFee = calcCloseFee(targetAmount);
+        const guaranteeAmount = calcGuaranteeAmount(targetAmount);
+        const payback = guaranteeAmount.sub(closeFee);
+
+        return (
+            <Space direction="vertical">
+                <div>
+                    <Text type="secondary">{t('Guarantee Amount')}: </Text>
+                    <Text>{transformTargetAmount(targetAsset, guaranteeAmount)}</Text>
+                </div>
+                <div>
+                    <Text type="secondary">{t('Order Close Fee')}: </Text>
+                    <Text>{transformTargetAmount(targetAsset, closeFee)}</Text>
+                </div>
+                <div>
+                    <Text type="secondary">{t('Payback')}: </Text>
+                    <Text>{transformTargetAmount(targetAsset, payback)}</Text>
+                </div>
+            </Space>
+        );
+    }
+
+    function renderConfirmCancelContent(item) {
         const {
             targetAmount,
             targetAsset
@@ -159,15 +209,35 @@ function List({ isLoading, items, refresh }) {
         );
     }
 
+    const handleCloseClick = (item) => {
+        return () => {
+            confirm({
+                title: t('Confirm Transaction'),
+                okButtonProps: { danger: true },
+                content: renderConfirmCloseContent(item),
+                onOk() {
+                    return bazaarContract.close(item.id).
+                        then(() => {
+                            message.success(t("Item closed"));
+                            refresh();
+                        }).
+                        catch(e => {
+                            console.error(e);
+                            message.error(t('Error while closing item'));
+                        });
+                },
+            });
+        }
+    }
+
     const handleCancelClick = (item) => {
         return () => {
             confirm({
                 title: t('Confirm Transaction'),
-                icon: <ExclamationCircleOutlined />,
                 okButtonProps: { danger: true },
-                content: renderConfirmContent(item),
+                content: renderConfirmCancelContent(item),
                 onOk() {
-                    return bazaarContract.cancel(item.id).
+                    return bazaarContract.cancelForSeller(item.id).
                         then(() => {
                             message.success(t("Item cancelled"));
                             refresh();
@@ -206,6 +276,16 @@ function List({ isLoading, items, refresh }) {
             <StyledPanel header={renderHeader(item)} key={item.id}>
                 <Space direction='horizontal'>
                     <Button
+                        onClick={handleCloseClick(item)}
+                        danger
+                        disabled={!isItemClosable(item)}
+                        size="large"
+                        type="primary"
+                        shape="round"
+                    >
+                        {t('Close Sale')}
+                    </Button>
+                    <Button
                         onClick={handleCancelClick(item)}
                         danger
                         disabled={!isItemCancellable(item)}
@@ -213,7 +293,8 @@ function List({ isLoading, items, refresh }) {
                         type="primary"
                         shape="round"
                     >
-                        {t('Cancel Sale')}
+                        <span>{t('Cancel Sale')}&nbsp;</span>
+                        {isInCancellableState(item) && timeToCancel(item) > 0 && <Timer initialValue={timeToCancel(item)} />}
                     </Button>
                     <Button
                         onClick={handleWithdrawClick(item)}
@@ -222,7 +303,8 @@ function List({ isLoading, items, refresh }) {
                         type="primary"
                         shape="round"
                     >
-                        {t('Withdraw Guarantee Deposit')}
+                        <span>{t('Withdraw Guarantee Deposit')}&nbsp;</span>
+                        <span>{isInWithdrawableState(item) && remainingTime(item) > 0 && <Timer initialValue={remainingTime(item)} />}</span>
                     </Button>
                     {item.buyer != AddressZero &&
                         <ProfileInfoButton

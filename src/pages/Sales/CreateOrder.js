@@ -13,12 +13,13 @@ import CreateProfileButton from "components/CreateProfileButton";
 import { parseUnits } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
 import useTokenBalance, { FetchStatus } from "hooks/useTokenBalance";
-import { sourceAssets, transformTargetAmount } from "utils/transforms";
+import { transformTargetAmount } from "utils/transforms";
 import { calcGuaranteeAmount, calcSellFee } from "utils/fees";
 import { APPROVE_STATES, useApproveToken } from "hooks/useApproveToken";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { bazaars, sourceAssetNames, sourceAssets, sourceAssetsUnits, units } from "config/assets";
 
-const { Option } = Select;
+const { Option, OptGroup } = Select;
 const { confirm } = Modal;
 const { Text } = Typography;
 
@@ -72,6 +73,12 @@ const InlinedFormItem = styled(Form.Item)`
     `}
 `
 
+const initialValues = {
+    sourceAsset: sourceAssets.CARAT_GOLD_18,
+    targetAsset: tokens.busd.address,
+    timeoutValueUnit: 'minutes',
+    sourceAmountUnit: units.GRAM.id,
+};
 
 function CreateOrder() {
     const { t } = useTranslation();
@@ -82,6 +89,7 @@ function CreateOrder() {
     const bazaarContract = useBazaarContract();
     const { balance: busdBalance, fetchStatus: busdBalanceStatus } = useTokenBalance(tokens.busd.address);
     const { state: approveState, approve } = useApproveToken(handleOnApproved);
+    const [sourceAsset, setSourceAsset] = useState(initialValues.sourceAsset);
 
     useEffect(() => {
         if (!isProfileLoading && !profile) {
@@ -89,19 +97,26 @@ function CreateOrder() {
         }
     }, [isProfileLoading, profile])
 
-    const initialValues = {
-        sourceAsset: sourceAssets.GOLD,
-        targetAsset: tokens.busd.address
-    };
-
     const getFormValues = () => {
         const values = form.getFieldsValue();
 
-        const sourceAmount = BigNumber.from(values.sourceAmount);
+        let sourceAmount = BigNumber.from(values.sourceAmount);
         const targetAmount = parseUnits(values.targetAmount, tokens.busd.decimals);
-        const timeout = BigNumber.from(parseInt(values.timeout) * 60); // minute to seconds
+        let timeout = BigNumber.from(parseInt(values.timeout));
         const sourceAsset = values.sourceAsset;
         const targetAsset = values.targetAsset;
+
+        if (values.timeoutValueUnit === 'minutes') {
+            timeout = timeout.mul(60);
+        } else if (values.timeoutValueUnit === 'hours') {
+            timeout = timeout.mul(60).mul(60);
+        } else if (values.timeoutValueUnit === 'days') {
+            timeout = timeout.mul(60).mul(60).mul(24);
+        }
+
+        if (values.sourceAmountUnit === units.KILOGRAM) {
+            sourceAmount = sourceAmount.mul(1000);
+        }
 
         return {
             sourceAmount,
@@ -141,7 +156,6 @@ function CreateOrder() {
                     <Text>{transformTargetAmount(targetAsset, busdBalance)}</Text>
                 </div>
                 <Text type="warning">* {t("Guarantee amount will be returned to you if there were no conflicts")}</Text>
-                <Text type="danger">* {t("In case of conflict between you and buyer, you guarantee amount will be blocked till jury voting ends")}</Text>
             </Space>
         );
     }
@@ -162,6 +176,7 @@ function CreateOrder() {
             title: t('Confirm Transaction'),
             icon: <ExclamationCircleOutlined />,
             content: renderConfirmContent(),
+            closable: true,
             okButtonProps: { disabled: !canAfford },
             onOk() {
                 return bazaarContract.placeOrder(
@@ -187,6 +202,33 @@ function CreateOrder() {
         approve(BAZAAR_ADDRESS, targetAsset, guaranteeAmount);
     }
 
+    const handleSourceAssetChange = (value) => {
+        setSourceAsset(value);
+        const units = sourceAssetsUnits[value];
+
+        form.setFieldsValue({ sourceAmountUnit: units[0].id });
+    }
+
+    const renderSourceAssets = () => {
+        return Object.entries(bazaars).map(([id, b]) => (
+            <OptGroup label={<span>{b?.icon} {t(b.symbol)}</span>} key={id}>
+                {
+                    b.assets.map((asset) => (
+                        <Option value={asset} key={asset}>{t(sourceAssetNames[asset])}</Option>
+                    ))
+                }
+            </OptGroup>
+        ))
+    }
+
+    const renderSourceAmountUnit = () => {
+        const units = sourceAssetsUnits[sourceAsset];
+
+        return units.map(({ id, symbol }) => (
+            <Option value={id} key={id}>{t(symbol)}</Option>
+        ))
+    }
+
     return (
         <OrderWrapper>
             <Col xl={10} lg={14} md={14} sm={22} xs={22}>
@@ -202,23 +244,22 @@ function CreateOrder() {
                                 requiredMark={false}
                             >
                                 <Form.Item name="sourceAsset" label={t('Source Asset')} rules={[{ required: true }]}>
-                                    <Select>
-                                        <Option value={0}>{t('Gold')}</Option>
+                                    <Select onChange={handleSourceAssetChange}>
+                                        {renderSourceAssets()}
                                     </Select>
                                 </Form.Item>
                                 <Form.Item style={{ marginBottom: 0 }}>
-                                    <InlinedFormItem style={{ margin: '0' }} name="sourceAmount" label={`${t('Source Amount')}(${t('Gram')})`} rules={[{ required: true }]}>
+                                    <InlinedFormItem style={{ margin: '0' }} name="sourceAmount" label={t('Source Amount')} rules={[{ required: true }]}>
                                         <Input type={'number'} className="ltr-input" />
                                     </InlinedFormItem>
-                                    <InlinedFormItem name="sourceAmountType" label={`${t('Source Amount Type')}(${t('Gram')})`} rules={[{ required: true }]}>
+                                    <InlinedFormItem name="sourceAmountUnit" label={t('Unit')} rules={[{ required: true }]}>
                                         <Select>
-                                            <Option value={0}>{t('Gold')}</Option>
-                                            <Option value={0}>{t('Gold')}</Option>
+                                            {renderSourceAmountUnit()}
                                         </Select>
                                     </InlinedFormItem>
                                 </Form.Item>
                                 <Form.Item style={{ marginBottom: 0 }}>
-                                    <InlinedFormItem name="targetAmount" label={t('Target Amount')} rules={[{ required: true }]}>
+                                    <InlinedFormItem name="targetAmount" label={t('Your Price')} rules={[{ required: true }]}>
                                         <Input type={'number'} className="ltr-input" />
                                     </InlinedFormItem>
                                     <InlinedFormItem name="targetAsset" label={t('Target Asset')} rules={[{ required: true }]}>
@@ -227,16 +268,15 @@ function CreateOrder() {
                                         </Select>
                                     </InlinedFormItem>
                                 </Form.Item>
-
                                 <Form.Item style={{ marginBottom: 0 }}>
-                                    <InlinedFormItem name="timeout" label={`${t('Valid For')}(${t('Minutes')})`} rules={[{ required: true }]}>
+                                    <InlinedFormItem name="timeout" label={t('Valid For')} rules={[{ required: true }]}>
                                         <Input type={'number'} className="ltr-input" />
                                     </InlinedFormItem>
-                                    <InlinedFormItem name="timeoutValueType" label={t('Target Asset')} rules={[{ required: true }]}>
+                                    <InlinedFormItem name="timeoutValueUnit" label={t('Unit')} rules={[{ required: true }]}>
                                         <Select>
-                                            <Option value={'minutes'}>{t('Minutes')}</Option>
-                                            <Option value={'hours'}>{t('Hours')}</Option>
-                                            <Option value={'days'}>{t('Days')}</Option>
+                                            <Option value='minutes' >{t('Minutes')}</Option>
+                                            <Option value='hours'>{t('Hours')}</Option>
+                                            <Option value='days'>{t('Days')}</Option>
                                         </Select>
                                     </InlinedFormItem>
                                 </Form.Item>

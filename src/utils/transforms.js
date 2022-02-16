@@ -1,21 +1,12 @@
-import { BUSD_ADDRESS } from "constants/addresses";
+import { sourceAssets } from "config/assets";
 import tokens from "constants/tokens";
-import { formatUnits } from "ethers/lib/utils";
-import i18n, { t } from "i18next";
-import { getBalanceAmount, getBalanceAmountInFloat } from "./formatBalance";
-
-export const sourceAssets = {
-    GOLD: 0
-};
-
-export const sourceAssetNames = {
-    [sourceAssets.GOLD]: 'GOLD'
-};
+import i18n from "i18next";
+import { getBalanceAmountInFloat } from "./formatBalance";
 
 export function transformGoldAmount(amount) {
     const amountInK = amount.toNumber() / 1000;
     const amountInKRem = amount.toNumber() % 1000;
-    const {t} = i18n;
+    const { t } = i18n;
 
     if (amountInK < 1) {
         return `${amount} ${t('Gram')}`
@@ -30,7 +21,7 @@ export function transformGoldAmount(amount) {
 
 export function transformSourceAmount(sourceAsset, amount) {
     switch (sourceAsset) {
-        case sourceAssets.GOLD:
+        case sourceAssets.CARAT_GOLD_18:
             return transformGoldAmount(amount);
         default:
             return transformGoldAmount(amount);

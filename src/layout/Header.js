@@ -29,14 +29,14 @@ const StyledHeader = styled(Layout.Header)`
   width: 100%;
   zIndex: 1;
   position: fixed;
-  color: ${({theme}) => theme.colors.headerText};
+  color: ${({ theme }) => theme.colors.headerText};
 
   & > ul > li > .ant-menu-title-content > a {
-    color: ${({theme}) => theme.colors.headerText};
+    color: ${({ theme }) => theme.colors.headerText};
   }
 
   & > ul > li {
-    color: ${({theme}) => theme.colors.headerText};
+    color: ${({ theme }) => theme.colors.headerText};
   }
 `
 
@@ -172,9 +172,28 @@ function AppHeader() {
         <StyledHeader>
             <Menu mode="horizontal" selectedKeys={[location.pathname]} style={{ width: '100%' }}>
                 <Menu.Item key="/" icon={<ShopOutlined />}><Link to={'/'}>{t('Bazaar')}</Link></Menu.Item>
-                <Menu.Item disabled={!account || !profile} key="/sales/new" icon={<PlusOutlined />}><Link to={'/sales/new'}>{t('Create Order')}</Link></Menu.Item>
-                <Menu.Item disabled={!account || !profile} key="/sales" icon={<ShoppingOutlined />}><Link to={'/sales'}>{t('My Sales')}</Link></Menu.Item>
-                <Menu.Item disabled={!account || !profile} key="/purchases" icon={<ShoppingCartOutlined />}><Link to={'/purchases'}>{t('My Purchases')}</Link></Menu.Item>
+                <Menu.Item
+                    disabled={!account || !profile}
+                    key="/sales/new"
+                    icon={<PlusOutlined />}
+                >
+                    <Link to={'/sales/new'}>{t('Create Order')}</Link>
+                </Menu.Item>
+                <Menu.Item
+                    disabled={!account || !profile}
+                    key="/sales"
+                    icon={<ShoppingOutlined />}
+                >
+                    <Link to={'/sales'}>{t('My Sales')}</Link>
+                </Menu.Item>
+                <Menu.Item
+                    disabled={!account || !profile}
+                    key="/purchases"
+                    icon={<ShoppingCartOutlined
+                    />}
+                >
+                    <Link to={'/purchases'}>{t('My Purchases')}</Link>
+                </Menu.Item>
             </Menu>
             <HeaderOptions>
                 <Dropdown overlay={languageSelectMenu} arrow placement="bottomCenter">

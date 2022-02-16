@@ -1,6 +1,7 @@
 import { getBazaarContract } from "hooks/useContracts";
 import { AddressZero } from '@ethersproject/constants'
 import { orderStates } from "utils/order";
+import { sourceAssets as sourceAssetsList} from "config/assets";
 
 const parseOrders = (_orders) => {
     return _orders.map(o => ({
@@ -23,8 +24,10 @@ export const fetchOrdersList = async ({
     buyer = AddressZero,
     seller = AddressZero,
     states = [orderStates.Placed],
+    sourceAssets = [],
     fromDate = 0,
-    toDate = 0
+    toDate = 0,
+    withExpireds = true
 }) => {
     const bazaarContract = getBazaarContract();
 
@@ -35,8 +38,10 @@ export const fetchOrdersList = async ({
             buyer,
             seller,
             states,
+            sourceAssets,
             fromDate,
-            toDate
+            toDate,
+            withExpireds
         );
 
         return parseOrders(orders);

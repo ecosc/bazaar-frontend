@@ -13,6 +13,7 @@ import tokens from 'constants/tokens';
 import { useBazaarContract } from 'hooks/useContracts';
 import { APPROVE_STATES, useApproveToken } from 'hooks/useApproveToken';
 import { useNavigate } from 'react-router-dom';
+import { orderStates } from 'utils/order';
 
 const { Text } = Typography;
 const { confirm } = Modal;
@@ -51,6 +52,20 @@ function List({ isLoading, items, refresh }) {
     const navigate = useNavigate();
 
     const { state: approveState, approve } = useApproveToken(handleOnApproved);
+
+    const remainingTime = (item) => {
+        const now = Date.now();
+
+        return Math.floor(item.deadline - (now / 1000));
+    }
+
+    const isItemBuyable = (item) => {
+        if (remainingTime(item) <= 0) {
+            return false;
+        }
+
+        return item.state == orderStates.Placed;
+    }
 
     const renderSkeleton = () => {
         return (
@@ -154,6 +169,7 @@ function List({ isLoading, items, refresh }) {
                 <BuyButton
                     onClick={handleBuyClick(item)}
                     loading={approveState === APPROVE_STATES.APPROVING}
+                    disabled={!isItemBuyable(item)}
                 />
             </StyledPanel>
         ));

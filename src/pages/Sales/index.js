@@ -1,6 +1,6 @@
 import { useWeb3React } from "@web3-react/core";
 import { ReloadOutlined } from '@ant-design/icons'
-import { Col, Row, Select, Switch, Form, Typography, Button } from "antd";
+import { Col, Row, Select, Switch, Form, Typography, Button, notification } from "antd";
 import { useFetchOrders, useOrders } from "hooks/useOrder";
 import { useProfile } from "hooks/useProfile";
 import { useEffect, useState } from "react";
@@ -10,6 +10,10 @@ import styled from "styled-components";
 import { orderStateInString, orderStateNames, orderStates } from "utils/order";
 import List from "./components/List";
 import PageHeader from "components/PageHeader";
+import { useBazaarContract } from "hooks/useContracts";
+import { BAZAAR_ADDRESS } from "constants/addresses";
+import { hexZeroPad } from "ethers/lib/utils";
+import { utils } from "ethers";
 
 const { Option } = Select;
 const { Text } = Typography;
@@ -38,7 +42,6 @@ const Actions = styled(Row)`
 const defaultFilters = [
     orderStates.Placed,
     orderStates.Soled,
-    orderStates.Conflict
 ];
 
 function Bazaar() {
@@ -49,6 +52,38 @@ function Bazaar() {
     const navigate = useNavigate();
     const [filters, setFilters] = useState({ states: defaultFilters, seller: account });
     const { refresh, setAutoRefresh, autoRefresh } = useFetchOrders(false, filters);
+
+    const bazaar = useBazaarContract();
+
+    useEffect(() => {
+        if (!account) {
+            return;
+        }
+
+        const filter = {
+            address: BAZAAR_ADDRESS,
+            topics: [
+                utils.id("OrderPlaced(uint256,address)"),
+                null,
+                hexZeroPad(account, 32)
+            ]
+        };
+
+        bazaar.on(filter, (orderID, seller) => {
+            notification.open({
+                message: t('New order placed'),
+                description: t('A new order with id ({{id}}) placed for you just right now', {id: orderID}),
+                duration: 5,
+                placement: 'bottomRight'
+            });
+
+            refresh();
+        });
+
+        return () => {
+            bazaar.removeAllListeners(filter)
+        };
+    }, [account]);
 
     useEffect(() => {
         if (!isProfileLoading && !profile) {
