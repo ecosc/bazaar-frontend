@@ -1,6 +1,17 @@
 import PropTypes from 'prop-types';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { Col, Collapse, Row, Skeleton, Typography, Modal, Space, message, Empty } from "antd";
+import { DownOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import {
+    Col,
+    Collapse,
+    Row,
+    Skeleton,
+    Typography,
+    Modal,
+    Space,
+    message,
+    Empty,
+    Button
+} from "antd";
 import styled from "styled-components";
 import BuyButton from "components/BuyButton";
 import React from "react";
@@ -34,6 +45,11 @@ const StyledPanel = styled(Panel)`
     text-align: center;
 `;
 
+const LoadMoreButton = styled(Button)`
+    self-align: center;
+    margin-top: 10px;
+`;
+
 const StyledSkeleton = styled(Skeleton)`
     & > .ant-skeleton-content > .ant-skeleton-paragraph {
         margin-bottom: 0 !important;
@@ -52,7 +68,7 @@ const Column = styled.div`
     align-items: flex-start;
 `;
 
-function List({ isLoading, items, refresh }) {
+function List({ isLoading, items, refresh, loadMore, isLoadingMore }) {
     const { t } = useTranslation();
     const { balance: busdBalance } = useTokenBalance(tokens.busd.address);
     const bazaarContract = useBazaarContract();
@@ -186,17 +202,35 @@ function List({ isLoading, items, refresh }) {
         ));
     }
 
+    const renderList = () => {
+        if (items.length < 1 && !isLoading) {
+            return <Empty />;
+        }
+
+        return (
+            <>
+                <StyledCollapse expandIconPosition="right">
+                    {
+                        isLoading ? renderSkeleton() : renderItems()
+                    }
+                </StyledCollapse>
+                <LoadMoreButton
+                    icon={<DownOutlined />}
+                    shape="round"
+                    type="dashed"
+                    loading={isLoadingMore}
+                    onClick={() => loadMore()}
+                >
+                    {t('Load More')}
+                </LoadMoreButton>
+            </>
+        )
+    }
+
     return (
         <Row style={{ width: '100%', padding: "24px" }} align="center">
-            <Col xl={16} lg={20} md={20} sm={24} xs={24}>
-                {
-                    (items.length < 1 && !isLoading) ? <Empty /> :
-                        <StyledCollapse expandIconPosition="right">
-                            {
-                                isLoading ? renderSkeleton() : renderItems()
-                            }
-                        </StyledCollapse>
-                }
+            <Col xl={16} lg={20} md={20} sm={24} xs={24} style={{ textAlign: 'center' }}>
+                {renderList()}
             </Col>
         </Row>
     );
@@ -204,8 +238,10 @@ function List({ isLoading, items, refresh }) {
 
 List.propTypes = {
     isLoading: PropTypes.bool,
+    isLoadingMore: PropTypes.bool,
     items: PropTypes.array,
     refresh: PropTypes.func,
+    loadMore: PropTypes.func,
 };
 
 export default List;

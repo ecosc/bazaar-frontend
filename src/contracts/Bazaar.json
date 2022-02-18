@@ -19,6 +19,12 @@
           "internalType": "uint256",
           "name": "orderIdx",
           "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "buyer",
+          "type": "address"
         }
       ],
       "name": "DeliveryApproved",
@@ -32,6 +38,12 @@
           "internalType": "uint256",
           "name": "orderIdx",
           "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "buyer",
+          "type": "address"
         }
       ],
       "name": "OrderCancelledBuyBuyer",
@@ -45,6 +57,12 @@
           "internalType": "uint256",
           "name": "orderIdx",
           "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "seller",
+          "type": "address"
         }
       ],
       "name": "OrderCancelledBuySeller",
@@ -58,6 +76,12 @@
           "internalType": "uint256",
           "name": "orderIdx",
           "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "seller",
+          "type": "address"
         }
       ],
       "name": "OrderClosed",
@@ -109,6 +133,12 @@
           "internalType": "uint256",
           "name": "orderIdx",
           "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "seller",
+          "type": "address"
         }
       ],
       "name": "OrderWithdrew",
@@ -634,9 +664,9 @@
     {
       "inputs": [
         {
-          "internalType": "uint256",
+          "internalType": "int256",
           "name": "fromID",
-          "type": "uint256"
+          "type": "int256"
         },
         {
           "internalType": "uint256",

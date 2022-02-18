@@ -1,5 +1,5 @@
 import { useWeb3React } from "@web3-react/core";
-import { Button, Card, Col, Form, Input, message, Select, Space, Typography, Modal } from "antd";
+import { Button, Card, Col, Form, Input, message, Select, Space, Typography, Modal, Alert } from "antd";
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import ConnectWalletButton from "components/ConnectWalletButton";
 import { useProfile } from "hooks/useProfile";
@@ -130,9 +130,11 @@ function CreateOrder() {
         const guaranteeAmount = calcGuaranteeAmount(targetAmount);
         const sellFee = calcSellFee(targetAmount);
         const totalIncome = targetAmount.sub(sellFee);
+        const canAfford = busdBalance.gte(guaranteeAmount);
 
         return (
             <Space direction="vertical">
+                {!canAfford && <Alert message={t("You don't have enough token for placing order")} type="error"/>}
                 <div>
                     <Text type="secondary">{t('Guarantee Amount')}: </Text>
                     <Text>{transformTargetAmount(targetAsset, guaranteeAmount)}</Text>

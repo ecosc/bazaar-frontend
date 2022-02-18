@@ -40,6 +40,7 @@
     "Minutes": "دقیقه",
     "Hours": "ساعت",
     "Days": "روز",
+    "You don't have enough token for placing order": "موجودی حساب شما برای ایجاد سفارش کافی نیست!",
     "Create Order": "ایجاد سفارش",
     "Place Order": "ایجاد سفارش",
     "Finalize Order": "نهایی کردن سفارش",
@@ -133,5 +134,6 @@
     "Order cancel requested": "درخواست لغو سفارش ثبت شد",
     "Order withdrew requested": "درخواست برداشت مبلغ گارانتی قبت شد",
     "Delivery approvement requested": "درخواست تایید تحویل ثبت شد",
-    "Order buy requested": "درخواست خرید ثبت شد"
+    "Order buy requested": "درخواست خرید ثبت شد",
+    "Load More": "موارد بیشتر"
 }

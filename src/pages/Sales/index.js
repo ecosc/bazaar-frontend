@@ -50,10 +50,10 @@ function Bazaar() {
     const { isLoading: isProfileLoading, profile } = useProfile();
     const { account } = useWeb3React();
     const { t } = useTranslation();
-    const { orders, isLoading: isOrdersLoading } = useOrders();
+    const { orders, isLoading: isOrdersLoading, isLoadingMore } = useOrders();
     const navigate = useNavigate();
     const [filters, setFilters] = useState({ states: defaultFilters, seller: account });
-    const { refresh, setAutoRefresh, autoRefresh } = useFetchOrders(false, filters);
+    const { refresh, setAutoRefresh, autoRefresh, loadMore } = useFetchOrders(false, filters);
     useNotifyOnOrderPlaced(onEventFired);
     useNotifyOnOrderClosed(onEventFired);
     useNotifyOnOrderCancelledBySeller(onEventFired);
@@ -113,8 +113,10 @@ function Bazaar() {
             </Actions>
             <List
                 isLoading={isProfileLoading || isOrdersLoading}
+                isLoadingMore={isLoadingMore}
                 items={orders}
                 refresh={refresh}
+                loadMore={loadMore}
             />
         </Wrapper>
     );

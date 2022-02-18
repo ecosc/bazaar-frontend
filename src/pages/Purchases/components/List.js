@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { DownOutlined } from '@ant-design/icons';
 import { Col, Collapse, Row, Skeleton, Typography, Modal, Space, message, Button, Empty } from "antd";
 import styled from "styled-components";
 import React from "react";
@@ -8,7 +9,6 @@ import { calcBuyFee, calcCancellationFee } from 'utils/fees';
 import { useBazaarContract } from 'hooks/useContracts';
 import { timestampInLocale } from 'utils/datetime';
 import { orderStates, orderStateInString, maxDeliveryTime } from 'utils/order';
-import { AddressZero } from '@ethersproject/constants'
 import ProfileInfoButton from 'components/ProfileInfoButton';
 import Timer from 'components/Timer';
 import { sourceAssetNames } from 'config/assets';
@@ -31,6 +31,11 @@ const StyledPanel = styled(Panel)`
     text-align: center;
 `;
 
+const LoadMoreButton = styled(Button)`
+    self-align: center;
+    margin-top: 10px;
+`;
+
 const StyledSkeleton = styled(Skeleton)`
     & > .ant-skeleton-content > .ant-skeleton-paragraph {
         margin-bottom: 0 !important;
@@ -49,7 +54,7 @@ const Column = styled.div`
     align-items: flex-start;
 `;
 
-function List({ isLoading, items, refresh }) {
+function List({ isLoading, isLoadingMore, items, refresh, loadMore }) {
     const { t } = useTranslation();
     const bazaarContract = useBazaarContract();
 
@@ -274,17 +279,35 @@ function List({ isLoading, items, refresh }) {
         ));
     }
 
+    const renderList = () => {
+        if (items.length < 1 && !isLoading) {
+            return <Empty />;
+        }
+
+        return (
+            <>
+                <StyledCollapse expandIconPosition="right">
+                    {
+                        isLoading ? renderSkeleton() : renderItems()
+                    }
+                </StyledCollapse>
+                <LoadMoreButton
+                    icon={<DownOutlined />}
+                    shape="round"
+                    type="dashed"
+                    loading={isLoadingMore}
+                    onClick={() => loadMore()}
+                >
+                    {t('Load More')}
+                </LoadMoreButton>
+            </>
+        )
+    }
+
     return (
         <Row style={{ width: '100%', padding: "24px" }} align="center">
-            <Col xl={18} lg={22} md={22} sm={24} xs={24}>
-                {
-                    (items.length < 1 && !isLoading) ? <Empty /> :
-                        <StyledCollapse expandIconPosition="right">
-                            {
-                                isLoading ? renderSkeleton() : renderItems()
-                            }
-                        </StyledCollapse>
-                }
+            <Col xl={18} lg={22} md={22} sm={24} xs={24} style={{ textAlign: 'center' }}>
+                {renderList()}
             </Col>
         </Row>
     );
@@ -292,8 +315,10 @@ function List({ isLoading, items, refresh }) {
 
 List.propTypes = {
     isLoading: PropTypes.bool,
+    isLoadingMore: PropTypes.bool,
     items: PropTypes.array,
     refresh: PropTypes.func,
+    loadMore: PropTypes.func,
 };
 
 export default List;

@@ -45,9 +45,9 @@ function Bazaar() {
     const { account } = useWeb3React();
     const { isLoading: isProfileLoading } = useProfile();
     const { t } = useTranslation();
-    const { orders, isLoading: isOrdersLoading } = useOrders();
+    const { orders, isLoading: isOrdersLoading, isLoadingMore } = useOrders();
     const [filters, setFilters] = useState(defaultFilters);
-    const { refresh, setAutoRefresh, autoRefresh } = useFetchOrders(true, filters);
+    const { refresh, setAutoRefresh, autoRefresh, loadMore } = useFetchOrders(true, filters);
     const [currentBazaar, setCurrentBazaar] = useState(bazaars.GOLD.id);
     const assets = bazaars[currentBazaar].assets;
 
@@ -59,7 +59,7 @@ function Bazaar() {
         if (!values || values.length < 1) {
             return;
         }
-    
+
         setFilters(prev => ({ ...prev, sourceAssets: values }));
     }
 
@@ -122,8 +122,10 @@ function Bazaar() {
             </Actions>
             <List
                 isLoading={(account && isProfileLoading) || isOrdersLoading}
+                isLoadingMore={isLoadingMore}
                 items={orders}
                 refresh={refresh}
+                loadMore={loadMore}
             />
         </Wrapper >
     );

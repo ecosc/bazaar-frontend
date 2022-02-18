@@ -19,8 +19,8 @@ const parseOrders = (_orders) => {
 }
 
 export const fetchOrdersList = async ({
-    fromID = 0,
-    maxLength = 30,
+    fromID = -1,
+    maxLength = 10,
     buyer = AddressZero,
     seller = AddressZero,
     states = [orderStates.Placed],
