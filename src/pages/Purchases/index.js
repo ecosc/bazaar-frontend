@@ -10,6 +10,7 @@ import styled from "styled-components";
 import { orderStateInString, orderStateNames, orderStates } from "utils/order";
 import List from "./components/List";
 import PageHeader from "components/PageHeader";
+import { useNotifyOnDeliveryApproved, useNotifyOnOrderCancelledByBuyer, useNotifyOnOrderSold } from "hooks/useNotifyOn";
 
 const { Option } = Select;
 const { Text } = Typography;
@@ -36,7 +37,7 @@ const Actions = styled(Row)`
 `;
 
 const defaultFilters = [
-    orderStates.Soled,
+    orderStates.Sold,
 ];
 
 function Bazaar() {
@@ -47,6 +48,13 @@ function Bazaar() {
     const { orders, isLoading: isOrdersLoading } = useOrders();
     const [filters, setFilters] = useState({ states: defaultFilters, buyer: account });
     const { refresh, setAutoRefresh, autoRefresh } = useFetchOrders(false, filters);
+    useNotifyOnOrderSold(onEventFired);
+    useNotifyOnDeliveryApproved(onEventFired);
+    useNotifyOnOrderCancelledByBuyer(onEventFired);
+
+    function onEventFired() {
+        refresh();
+    }
 
     useEffect(() => {
         if (!isProfileLoading && !profile) {
@@ -75,7 +83,7 @@ function Bazaar() {
                             onChange={onFiltersChange}
                             maxTagCount='responsive'
                         >
-                            <Option key={0} value={orderStates.Soled}>{t('Bought')}</Option>
+                            <Option key={0} value={orderStates.Sold}>{t('Bought')}</Option>
                             <Option key={1} value={orderStates.Finished}>{t('Delivered')}</Option>
                             <Option key={2} value={orderStates.CancelledByBuyer}>{t(orderStateNames[orderStates.CancelledByBuyer])}</Option>
                             <Option key={3} value={orderStates.CancelledBySeller}>{t(orderStateNames[orderStates.CancelledBySeller])}</Option>

@@ -12,10 +12,17 @@ import { orderStates, orderStateInString, maxDeliveryTime } from 'utils/order';
 import { AddressZero } from '@ethersproject/constants'
 import ProfileInfoButton from 'components/ProfileInfoButton';
 import Timer from 'components/Timer';
+import { sourceAssetNames } from 'config/assets';
 
 const { Text } = Typography;
 const { confirm } = Modal;
 const { Panel } = Collapse;
+
+const StyledCollapse = styled(Collapse)`
+    width: 100%;
+    border-radius: 20px 20px 0 0;
+    filter: drop-shadow(rgba(25, 19, 38, 0.15) 0px 1px 4px);
+`;
 
 const StyledPanel = styled(Panel)`
     & > .ant-collapse-header {
@@ -68,7 +75,7 @@ function List({ isLoading, items, refresh }) {
     }
 
     const isInCancellableState = (item) => {
-        return item.state == orderStates.Soled;
+        return item.state == orderStates.Sold;
     }
 
     const isItemCancellable = (item) => {
@@ -102,14 +109,15 @@ function List({ isLoading, items, refresh }) {
     }
 
     const renderHeader = (item) => {
-        const now = Date.now();
-        const remainingTime = Math.floor(item.deadline - (now / 1000));
-
         return (
             <RowWrapper>
                 <Column>
                     <Text type="secondary">{t('Order ID')}</Text>
                     <Text>{item.id}</Text>
+                </Column>
+                <Column>
+                    <Text type="secondary">{t('Asset')}</Text>
+                    <Text>{t(sourceAssetNames[item.sourceAsset])}</Text>
                 </Column>
                 <Column>
                     <Text type="secondary">{t('Amount')}</Text>
@@ -218,12 +226,12 @@ function List({ isLoading, items, refresh }) {
                 onOk() {
                     return bazaarContract.close(item.id).
                         then(() => {
-                            message.success(t("Item closed"));
+                            message.success(t("Order close requested"));
                             refresh();
                         }).
                         catch(e => {
                             console.error(e);
-                            message.error(t('Error while closing item'));
+                            message.error(t('Error while closing order'));
                         });
                 },
             });
@@ -239,12 +247,12 @@ function List({ isLoading, items, refresh }) {
                 onOk() {
                     return bazaarContract.cancelForSeller(item.id).
                         then(() => {
-                            message.success(t("Item cancelled"));
+                            message.success(t("Order cancel requested"));
                             refresh();
                         }).
                         catch(e => {
                             console.error(e);
-                            message.error(t('Error while cancelling item'));
+                            message.error(t('Error while cancelling order'));
                         });
                 },
             });
@@ -259,7 +267,7 @@ function List({ isLoading, items, refresh }) {
                 onOk() {
                     return bazaarContract.withdraw(item.id).
                         then(() => {
-                            message.success(t("Guarantee amount withdrew"));
+                            message.success(t("Order withdrew requested"));
                             refresh();
                         }).
                         catch(e => {
@@ -275,27 +283,33 @@ function List({ isLoading, items, refresh }) {
         return items.map(item => (
             <StyledPanel header={renderHeader(item)} key={item.id}>
                 <Space direction='horizontal'>
-                    <Button
-                        onClick={handleCloseClick(item)}
-                        danger
-                        disabled={!isItemClosable(item)}
-                        size="large"
-                        type="primary"
-                        shape="round"
-                    >
-                        {t('Close Sale')}
-                    </Button>
-                    <Button
-                        onClick={handleCancelClick(item)}
-                        danger
-                        disabled={!isItemCancellable(item)}
-                        size="large"
-                        type="primary"
-                        shape="round"
-                    >
-                        <span>{t('Cancel Sale')}&nbsp;</span>
-                        {isInCancellableState(item) && timeToCancel(item) > 0 && <Timer initialValue={timeToCancel(item)} />}
-                    </Button>
+                    {
+                        item.state === orderStates.Placed &&
+                        <Button
+                            onClick={handleCloseClick(item)}
+                            danger
+                            disabled={!isItemClosable(item)}
+                            size="large"
+                            type="primary"
+                            shape="round"
+                        >
+                            {t('Close Sale')}
+                        </Button>
+                    }
+                    {
+                        item.state === orderStates.Sold &&
+                        <Button
+                            onClick={handleCancelClick(item)}
+                            danger
+                            disabled={!isItemCancellable(item)}
+                            size="large"
+                            type="primary"
+                            shape="round"
+                        >
+                            <span>{t('Cancel Sale')}&nbsp;</span>
+                            {isInCancellableState(item) && timeToCancel(item) > 0 && <Timer initialValue={timeToCancel(item)} />}
+                        </Button>
+                    }
                     <Button
                         onClick={handleWithdrawClick(item)}
                         disabled={!isItemWithdrawable(item)}
@@ -320,14 +334,14 @@ function List({ isLoading, items, refresh }) {
 
     return (
         <Row style={{ width: '100%', padding: "24px" }} align="center">
-            <Col xl={16} lg={22} md={22} sm={24} xs={24}>
+            <Col xl={18} lg={22} md={22} sm={24} xs={24}>
                 {
                     (items.length < 1 && !isLoading) ? <Empty /> :
-                        <Collapse expandIconPosition="right" style={{ width: '100%', borderRadius: '20px 20px 0 0', filter: 'drop-shadow(rgba(25, 19, 38, 0.15) 0px 1px 4px)' }} >
+                        <StyledCollapse expandIconPosition="right" >
                             {
                                 isLoading ? renderSkeleton() : renderItems()
                             }
-                        </Collapse>
+                        </StyledCollapse>
                 }
             </Col>
         </Row>

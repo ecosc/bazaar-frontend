@@ -1,9 +1,10 @@
-import { sourceAssets } from "config/assets";
+import { sourceAssets, sourceAssetsUnits } from "config/assets";
 import tokens from "constants/tokens";
 import i18n from "i18next";
+import { getLocale } from "localization";
 import { getBalanceAmountInFloat } from "./formatBalance";
 
-export function transformGoldAmount(amount) {
+export function transformWeight(amount) {
     const amountInK = amount.toNumber() / 1000;
     const amountInKRem = amount.toNumber() % 1000;
     const { t } = i18n;
@@ -19,26 +20,40 @@ export function transformGoldAmount(amount) {
     return `${toLocaleNumber(Math.floor(amountInK))} ${t('Kilo')} ${t('And')} ${Math.floor(amountInKRem)} ${t('Gram')}`;
 }
 
+export function transformUnit(sourceAsset, amount) {
+    const { t } = i18n;
+
+    const unit = sourceAssetsUnits[sourceAsset][0].symbol;
+
+    return `${toLocaleNumber(amount)} ${t(unit)}`;
+}
+
 export function transformSourceAmount(sourceAsset, amount) {
     switch (sourceAsset) {
         case sourceAssets.CARAT_GOLD_18:
-            return transformGoldAmount(amount);
+        case sourceAssets.CARAT_GOLD_24:
+        case sourceAssets.GOLD_MELTED_CASH:
+        case sourceAssets.MELTED_BANKING_GOLD:
+        case sourceAssets.MELTED_GOLD:
+            return transformWeight(amount);
         default:
-            return transformGoldAmount(amount);
+            return transformUnit(sourceAsset, amount);
     }
 }
 
-export function transformTargetAmount(targetAssetAddress, amount) {
+export function transformTargetAmount(targetAssetAddress, amount, displayDecimals = 4) {
     switch (targetAssetAddress) {
         case tokens.busd.address:
-            return toLocaleNumber(getBalanceAmountInFloat(amount, tokens.busd.decimals)) + ' ' + tokens.busd.symbol;
+            return toLocaleNumber(getBalanceAmountInFloat(amount, tokens.busd.decimals, displayDecimals), displayDecimals) + ' ' + tokens.busd.symbol;
         default:
             return "";
     }
 }
 
-export function toLocaleNumber(num = 0) {
-    return num.toLocaleString();
+export function toLocaleNumber(num = 0, displayDecimals = 4) {
+    const locale = getLocale();
+
+    return num.toLocaleString(locale, { maximumFractionDigits: displayDecimals });
 }
 
 

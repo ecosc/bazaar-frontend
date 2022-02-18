@@ -11,7 +11,7 @@ const parseOrders = (_orders) => {
         createdAt: o.createdAt.toNumber(),
         deadline: o.deadline.toNumber(),
         state: o.state,
-        sourceAsset: o.sourceAsset,
+        sourceAsset: o.sourceAsset.toNumber(),
         targetAsset: o.targetAsset,
         sourceAmount: o.sourceAmount,
         targetAmount: o.targetAmount,

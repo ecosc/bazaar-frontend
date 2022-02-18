@@ -91,12 +91,6 @@ function CreateOrder() {
     const { state: approveState, approve } = useApproveToken(handleOnApproved);
     const [sourceAsset, setSourceAsset] = useState(initialValues.sourceAsset);
 
-    useEffect(() => {
-        if (!isProfileLoading && !profile) {
-            navigate('/');
-        }
-    }, [isProfileLoading, profile])
-
     const getFormValues = () => {
         const values = form.getFieldsValue();
 
@@ -114,7 +108,7 @@ function CreateOrder() {
             timeout = timeout.mul(60).mul(60).mul(24);
         }
 
-        if (values.sourceAmountUnit === units.KILOGRAM) {
+        if (values.sourceAmountUnit === units.KILOGRAM.id) {
             sourceAmount = sourceAmount.mul(1000);
         }
 

@@ -6,10 +6,10 @@ import { useProfile } from "hooks/useProfile";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
-import { orderStateInString, orderStates } from "utils/order";
+import { orderStates } from "utils/order";
 import List from "./components/List";
 import PageHeader from "components/PageHeader";
-import { bazaars } from "config/assets";
+import { bazaars, sourceAssetNames } from "config/assets";
 
 const { Option } = Select;
 const { Text } = Typography;
@@ -48,16 +48,23 @@ function Bazaar() {
     const { orders, isLoading: isOrdersLoading } = useOrders();
     const [filters, setFilters] = useState(defaultFilters);
     const { refresh, setAutoRefresh, autoRefresh } = useFetchOrders(true, filters);
+    const [currentBazaar, setCurrentBazaar] = useState(bazaars.GOLD.id);
+    const assets = bazaars[currentBazaar].assets;
 
     useEffect(() => {
         refresh();
     }, [filters])
 
-    const onStatesChanged = (values) => {
-        setFilters(prev => ({ ...prev, states: values }));
+    const onAssetsChanged = (values) => {
+        if (!values || values.length < 1) {
+            return;
+        }
+    
+        setFilters(prev => ({ ...prev, sourceAssets: values }));
     }
 
     const onBazaarChanged = (value) => {
+        setCurrentBazaar(value);
         setFilters(prev => ({ ...prev, sourceAssets: bazaars[value].assets }));
     }
 
@@ -82,18 +89,19 @@ function Bazaar() {
                         </Select>
                     </div>
                     <div>
-                        <Text type="secondary">{t('State')}: </Text>
+                        <Text type="secondary">{t('Assets')}: </Text>
                         <Select
                             style={{ width: '300px' }}
                             mode="multiple"
                             showSearch={false}
-                            defaultValue={defaultFilters.states}
-                            onChange={onStatesChanged}
+                            defaultValue={defaultFilters.sourceAssets}
+                            onChange={onAssetsChanged}
                             maxTagCount='responsive'
+                            value={filters.sourceAssets}
                         >
                             {
-                                Object.entries(orderStates).map(([stateName, value]) => (
-                                    <Option key={value} value={value}>{orderStateInString(value)}</Option>
+                                assets.map((asset) => (
+                                    <Option key={asset} value={asset}>{t(sourceAssetNames[asset])}</Option>
                                 ))
                             }
                         </Select>

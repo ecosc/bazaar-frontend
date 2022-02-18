@@ -4,7 +4,7 @@ export const maxDeliveryTime = 8 * 60 * 60;
 
 export const orderStates = {
     Placed: 0,
-    Soled: 1,
+    Sold: 1,
     Finished: 2,
     Closed: 3,
     Withdrew: 4,
@@ -14,7 +14,7 @@ export const orderStates = {
 
 export const orderStateNames = {
     [orderStates.Placed]: 'Placed',
-    [orderStates.Soled]: 'Soled',
+    [orderStates.Sold]: 'Sold',
     [orderStates.Finished]: 'Finished',
     [orderStates.Closed]: 'Closed',
     [orderStates.Withdrew]: 'Withdrew',

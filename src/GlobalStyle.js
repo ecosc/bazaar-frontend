@@ -148,6 +148,13 @@ const GlobalStyle = createGlobalStyle`
   .ant-switch-checked {
     background-color: ${({theme}) => theme.colors.primary} !important;
   }
+
+  .ant-btn>.ant-btn-loading-icon .anticon {
+    ${({ theme }) => theme.dir == 'rtl' && `
+      padding-right: 0 !important;
+      padding-left: 8px !important;
+    `}
+  }
 `
 
 export default GlobalStyle;

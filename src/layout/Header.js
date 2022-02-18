@@ -173,7 +173,7 @@ function AppHeader() {
             <Menu mode="horizontal" selectedKeys={[location.pathname]} style={{ width: '100%' }}>
                 <Menu.Item key="/" icon={<ShopOutlined />}><Link to={'/'}>{t('Bazaar')}</Link></Menu.Item>
                 <Menu.Item
-                    disabled={!account || !profile}
+                    // disabled={!account || !profile}
                     key="/sales/new"
                     icon={<PlusOutlined />}
                 >

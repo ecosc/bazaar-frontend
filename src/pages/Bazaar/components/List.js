@@ -14,10 +14,17 @@ import { useBazaarContract } from 'hooks/useContracts';
 import { APPROVE_STATES, useApproveToken } from 'hooks/useApproveToken';
 import { useNavigate } from 'react-router-dom';
 import { orderStates } from 'utils/order';
+import { sourceAssetNames } from 'config/assets';
 
 const { Text } = Typography;
 const { confirm } = Modal;
 const { Panel } = Collapse;
+
+const StyledCollapse = styled(Collapse)`
+    width: 100%;
+    border-radius: 20px 20px 0 0;
+    filter: drop-shadow(rgba(25, 19, 38, 0.15) 0px 1px 4px);
+`;
 
 const StyledPanel = styled(Panel)`
     & > .ant-collapse-header {
@@ -88,6 +95,10 @@ function List({ isLoading, items, refresh }) {
                     <Text>{item.id}</Text>
                 </Column>
                 <Column>
+                    <Text type="secondary">{t('Asset')}</Text>
+                    <Text>{t(sourceAssetNames[item.sourceAsset])}</Text>
+                </Column>
+                <Column>
                     <Text type="secondary">{t('Amount')}</Text>
                     <Text>{transformSourceAmount(item.sourceAsset, item.sourceAmount)}</Text>
                 </Column>
@@ -142,12 +153,12 @@ function List({ isLoading, items, refresh }) {
             onOk() {
                 return bazaarContract.buy(item.id).
                     then(() => {
-                        message.success(t("Item bought"));
+                        message.success(t("Order buy requested"));
                         navigate('/purchases');
                     }).
                     catch(e => {
                         console.error(e);
-                        message.error(t('Error while buying item'));
+                        message.error(t('Error while buying order'));
                     });
             },
         });
@@ -177,14 +188,14 @@ function List({ isLoading, items, refresh }) {
 
     return (
         <Row style={{ width: '100%', padding: "24px" }} align="center">
-            <Col xl={14} lg={20} md={20} sm={24} xs={24}>
+            <Col xl={16} lg={20} md={20} sm={24} xs={24}>
                 {
                     (items.length < 1 && !isLoading) ? <Empty /> :
-                        <Collapse expandIconPosition="right" style={{ width: '100%', borderRadius: '20px 20px 0 0' }} >
+                        <StyledCollapse expandIconPosition="right">
                             {
                                 isLoading ? renderSkeleton() : renderItems()
                             }
-                        </Collapse>
+                        </StyledCollapse>
                 }
             </Col>
         </Row>

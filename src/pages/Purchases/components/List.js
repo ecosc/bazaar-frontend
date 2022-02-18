@@ -3,17 +3,25 @@ import { Col, Collapse, Row, Skeleton, Typography, Modal, Space, message, Button
 import styled from "styled-components";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { accountEllipsis, secondsToTime, transformSourceAmount, transformTargetAmount } from "utils/transforms";
-import { calcBuyFee } from 'utils/fees';
+import { accountEllipsis, transformSourceAmount, transformTargetAmount } from "utils/transforms";
+import { calcBuyFee, calcCancellationFee } from 'utils/fees';
 import { useBazaarContract } from 'hooks/useContracts';
 import { timestampInLocale } from 'utils/datetime';
-import { orderStates, orderStateInString } from 'utils/order';
+import { orderStates, orderStateInString, maxDeliveryTime } from 'utils/order';
 import { AddressZero } from '@ethersproject/constants'
 import ProfileInfoButton from 'components/ProfileInfoButton';
+import Timer from 'components/Timer';
+import { sourceAssetNames } from 'config/assets';
 
 const { Text } = Typography;
 const { confirm } = Modal;
 const { Panel } = Collapse;
+
+const StyledCollapse = styled(Collapse)`
+    width: 100%;
+    border-radius: 20px 20px 0 0;
+    filter: drop-shadow(rgba(25, 19, 38, 0.15) 0px 1px 4px);
+`;
 
 const StyledPanel = styled(Panel)`
     & > .ant-collapse-header {
@@ -45,14 +53,26 @@ function List({ isLoading, items, refresh }) {
     const { t } = useTranslation();
     const bazaarContract = useBazaarContract();
 
-    const remainingTime = (item) => {
+    const timeToCancel = (item) => {
         const now = Date.now();
 
-        return Math.floor(item.deadline - (now / 1000));
+        return Math.floor(item.createdAt + maxDeliveryTime - (now / 1000));
+    }
+
+    const isInCancellableState = (item) => {
+        return item.state == orderStates.Sold;
+    }
+
+    const isItemCancellable = (item) => {
+        if (timeToCancel(item) > 0) {
+            return false;
+        }
+
+        return isInCancellableState(item);
     }
 
     const isItemApprovable = (item) => {
-        return item.state == orderStates.Soled;
+        return item.state == orderStates.Sold;
     }
 
     const renderSkeleton = () => {
@@ -66,14 +86,15 @@ function List({ isLoading, items, refresh }) {
     }
 
     const renderHeader = (item) => {
-        const now = Date.now();
-        const remainingTime = Math.floor(item.deadline - (now / 1000));
-
         return (
             <RowWrapper>
                 <Column>
                     <Text type="secondary">{t('Order ID')}</Text>
                     <Text>{item.id}</Text>
+                </Column>
+                <Column>
+                    <Text type="secondary">{t('Asset')}</Text>
+                    <Text>{t(sourceAssetNames[item.sourceAsset])}</Text>
                 </Column>
                 <Column>
                     <Text type="secondary">{t('Amount')}</Text>
@@ -84,8 +105,8 @@ function List({ isLoading, items, refresh }) {
                     <Text>{transformTargetAmount(item.targetAsset, item.targetAmount)}</Text>
                 </Column>
                 <Column>
-                    <Text type="secondary">{t('Buyer')}</Text>
-                    <Text>{item.buyer != AddressZero ? accountEllipsis(item.buyer) : '-'}</Text>
+                    <Text type="secondary">{t('Seller')}</Text>
+                    <Text>{accountEllipsis(item.seller)}</Text>
                 </Column>
                 <Column>
                     <Text type="secondary">{t('Status')}</Text>
@@ -151,12 +172,68 @@ function List({ isLoading, items, refresh }) {
                 onOk() {
                     return bazaarContract.approveDelivery(item.id).
                         then(() => {
-                            message.success(t("Item delivery approved"));
-                            refresh();
+                            message.success(t("Delivery approvement requested"));
                         }).
                         catch(e => {
                             console.error(e);
                             message.error(t('Error while approving item delivery'));
+                        });
+                },
+            });
+        }
+    }
+
+    function renderConfirmCancelContent(item) {
+        const {
+            targetAmount,
+            targetAsset
+        } = item;
+
+        const buyFee = calcBuyFee(targetAmount);
+        const totalPrice = targetAmount.add(buyFee);
+        const cancellationFee = calcCancellationFee(targetAmount);
+        const payback = totalPrice.sub(cancellationFee);
+
+        return (
+            <Space direction="vertical">
+                <div>
+                    <Text type="secondary">{t('Buy Fee')}: </Text>
+                    <Text>{transformTargetAmount(targetAsset, buyFee)}</Text>
+                </div>
+                <div>
+                    <Text type="secondary">{t('Order Price')}: </Text>
+                    <Text>{transformTargetAmount(targetAsset, targetAmount)}</Text>
+                </div>
+                <div>
+                    <Text type="secondary">{t('Total Price')}: </Text>
+                    <Text>{transformTargetAmount(targetAsset, totalPrice)}</Text>
+                </div>
+                <div>
+                    <Text type="secondary">{t('Cancellation Fee')}: </Text>
+                    <Text>{transformTargetAmount(targetAsset, cancellationFee)}</Text>
+                </div>
+                <div>
+                    <Text type="secondary">{t('Payback')}: </Text>
+                    <Text>{transformTargetAmount(targetAsset, payback)}</Text>
+                </div>
+            </Space>
+        );
+    }
+
+    const handleCancelClick = (item) => {
+        return () => {
+            confirm({
+                title: t('Confirm Transaction'),
+                okButtonProps: { danger: true },
+                content: renderConfirmCancelContent(item),
+                onOk() {
+                    return bazaarContract.cancelForBuyer(item.id).
+                        then(() => {
+                            message.success(t("Order cancel requested"));
+                        }).
+                        catch(e => {
+                            console.error(e);
+                            message.error(t('Error while cancelling item'));
                         });
                 },
             });
@@ -169,13 +246,23 @@ function List({ isLoading, items, refresh }) {
                 <Space direction='horizontal'>
                     <Button
                         onClick={handleApproveClick(item)}
-                        danger
                         disabled={!isItemApprovable(item)}
                         size="large"
                         type="primary"
                         shape="round"
                     >
                         {t('Approve Delivery')}
+                    </Button>
+                    <Button
+                        onClick={handleCancelClick(item)}
+                        danger
+                        disabled={!isItemCancellable(item)}
+                        size="large"
+                        type="primary"
+                        shape="round"
+                    >
+                        <span>{t('Cancel Sale')}&nbsp;</span>
+                        {isInCancellableState(item) && timeToCancel(item) > 0 && <Timer initialValue={timeToCancel(item)} />}
                     </Button>
                     <ProfileInfoButton
                         address={item.seller}
@@ -189,14 +276,14 @@ function List({ isLoading, items, refresh }) {
 
     return (
         <Row style={{ width: '100%', padding: "24px" }} align="center">
-            <Col xl={16} lg={22} md={22} sm={24} xs={24}>
+            <Col xl={18} lg={22} md={22} sm={24} xs={24}>
                 {
                     (items.length < 1 && !isLoading) ? <Empty /> :
-                        <Collapse expandIconPosition="right" style={{ width: '100%', borderRadius: '20px 20px 0 0' }} >
+                        <StyledCollapse expandIconPosition="right">
                             {
                                 isLoading ? renderSkeleton() : renderItems()
                             }
-                        </Collapse>
+                        </StyledCollapse>
                 }
             </Col>
         </Row>

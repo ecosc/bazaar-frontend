@@ -28,10 +28,15 @@ export const ordersSlice = createSlice({
         })
         builder.addCase(fetchOrders.fulfilled, (state, action) => {
             state.isLoading = false;
-            state.orders = action.payload;
+            if (action.payload != null) {
+                state.orders = action.payload;
+            } else {
+                state.orders = [];
+            }
         })
         builder.addCase(fetchOrders.rejected, (state) => {
-            state.isLoading = false
+            state.isLoading = false;
+            state.orders = [];
         })
     }
 })
