@@ -1,9 +1,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { fetchOrdersList } from './helpers'
+import { DEFAULT_PAGE_SIZE, fetchOrdersList } from './helpers'
 
 export const initialState = {
     isLoading: true,
     isLoadingMore: false,
+    hasMore: true,
     orders: [],
     lastID: -1,
 }
@@ -37,6 +38,7 @@ export const ordersSlice = createSlice({
         builder.addCase(fetchOrders.pending, (state) => {
             state.isLoading = true;
             state.lastID = -1;
+            state.hasMore = false;
         })
         builder.addCase(fetchOrders.fulfilled, (state, action) => {
             state.isLoading = false;
@@ -45,8 +47,11 @@ export const ordersSlice = createSlice({
 
                 if (action.payload.length > 0) {
                     state.lastID = action.payload[action.payload.length - 1].id;
-                }
 
+                    if (action.payload.length >= DEFAULT_PAGE_SIZE) {
+                        state.hasMore = true;
+                    }
+                }
             } else {
                 state.orders = [];
                 state.lastID = -1;
@@ -67,6 +72,11 @@ export const ordersSlice = createSlice({
                 if (action.payload.length > 0) {
                     state.orders = [...state.orders, ...action.payload];
                     state.lastID = action.payload[action.payload.length - 1].id;
+                    if (action.payload.length >= DEFAULT_PAGE_SIZE) {
+                        state.hasMore = true;
+                    }
+                } else {
+                    state.hasMore = false;
                 }
             }
         })

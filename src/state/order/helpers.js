@@ -1,7 +1,8 @@
 import { getBazaarContract } from "hooks/useContracts";
 import { AddressZero } from '@ethersproject/constants'
 import { orderStates } from "utils/order";
-import { sourceAssets as sourceAssetsList} from "config/assets";
+
+export const DEFAULT_PAGE_SIZE = 10;
 
 const parseOrders = (_orders) => {
     return _orders.map(o => ({
@@ -20,7 +21,7 @@ const parseOrders = (_orders) => {
 
 export const fetchOrdersList = async ({
     fromID = -1,
-    maxLength = 10,
+    maxLength = DEFAULT_PAGE_SIZE,
     buyer = AddressZero,
     seller = AddressZero,
     states = [orderStates.Placed],

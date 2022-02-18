@@ -45,7 +45,7 @@ function Bazaar() {
     const { t } = useTranslation();
     const { account } = useWeb3React();
     const navigate = useNavigate();
-    const { orders, isLoading: isOrdersLoading, isLoadingMore } = useOrders();
+    const { orders, isLoading: isOrdersLoading, isLoadingMore, hasMore } = useOrders();
     const [filters, setFilters] = useState({ states: defaultFilters, buyer: account });
     const { refresh, setAutoRefresh, autoRefresh, loadMore } = useFetchOrders(false, filters);
     useNotifyOnOrderSold(onEventFired);
@@ -109,6 +109,7 @@ function Bazaar() {
                 items={orders}
                 refresh={refresh}
                 loadMore={loadMore}
+                hasMore={hasMore}
             />
         </Wrapper>
     );

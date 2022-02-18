@@ -45,7 +45,7 @@ function Bazaar() {
     const { account } = useWeb3React();
     const { isLoading: isProfileLoading } = useProfile();
     const { t } = useTranslation();
-    const { orders, isLoading: isOrdersLoading, isLoadingMore } = useOrders();
+    const { orders, isLoading: isOrdersLoading, isLoadingMore, hasMore } = useOrders();
     const [filters, setFilters] = useState(defaultFilters);
     const { refresh, setAutoRefresh, autoRefresh, loadMore } = useFetchOrders(true, filters);
     const [currentBazaar, setCurrentBazaar] = useState(bazaars.GOLD.id);
@@ -126,6 +126,7 @@ function Bazaar() {
                 items={orders}
                 refresh={refresh}
                 loadMore={loadMore}
+                hasMore={hasMore}
             />
         </Wrapper >
     );

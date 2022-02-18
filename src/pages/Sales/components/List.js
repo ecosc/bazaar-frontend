@@ -55,7 +55,7 @@ const Column = styled.div`
     align-items: flex-start;
 `;
 
-function List({ isLoading, isLoadingMore, items, refresh, loadMore }) {
+function List({ isLoading, isLoadingMore, items, refresh, loadMore, hasMore }) {
     const { t } = useTranslation();
     const bazaarContract = useBazaarContract();
 
@@ -354,6 +354,7 @@ function List({ isLoading, isLoadingMore, items, refresh, loadMore }) {
                     shape="round"
                     type="dashed"
                     loading={isLoadingMore}
+                    disabled={!hasMore}
                     onClick={() => loadMore()}
                 >
                     {t('Load More')}
@@ -374,6 +375,7 @@ function List({ isLoading, isLoadingMore, items, refresh, loadMore }) {
 List.propTypes = {
     isLoading: PropTypes.bool,
     isLoadingMore: PropTypes.bool,
+    hasMore: PropTypes.bool,
     items: PropTypes.array,
     refresh: PropTypes.func,
     loadMore: PropTypes.func,

@@ -68,7 +68,7 @@ const Column = styled.div`
     align-items: flex-start;
 `;
 
-function List({ isLoading, items, refresh, loadMore, isLoadingMore }) {
+function List({ isLoading, items, refresh, loadMore, isLoadingMore, hasMore }) {
     const { t } = useTranslation();
     const { balance: busdBalance } = useTokenBalance(tokens.busd.address);
     const bazaarContract = useBazaarContract();
@@ -219,6 +219,7 @@ function List({ isLoading, items, refresh, loadMore, isLoadingMore }) {
                     shape="round"
                     type="dashed"
                     loading={isLoadingMore}
+                    disabled={!hasMore}
                     onClick={() => loadMore()}
                 >
                     {t('Load More')}
@@ -239,6 +240,7 @@ function List({ isLoading, items, refresh, loadMore, isLoadingMore }) {
 List.propTypes = {
     isLoading: PropTypes.bool,
     isLoadingMore: PropTypes.bool,
+    hasMore: PropTypes.bool,
     items: PropTypes.array,
     refresh: PropTypes.func,
     loadMore: PropTypes.func,

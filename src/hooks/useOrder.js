@@ -32,7 +32,7 @@ export const useFetchOrders = (initialAutoRefresh = true, filters = {}) => {
 }
 
 export const useOrders = () => {
-    const { isLoading, orders, lastID, isLoadingMore } = useSelector((state) => state.order);
+    const { isLoading, orders, lastID, isLoadingMore, hasMore } = useSelector((state) => state.order);
 
-    return { isLoading, orders, lastID, isLoadingMore };
+    return { isLoading, orders, lastID, isLoadingMore, hasMore };
 }
