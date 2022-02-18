@@ -1,5 +1,5 @@
 import { useWeb3React } from "@web3-react/core";
-import { Button, Card, Col, Form, Input, message } from "antd";
+import { Button, Card, Col, Form, Input, message, Typography, Modal, Space, Alert } from "antd";
 import ConnectWalletButton from "components/ConnectWalletButton";
 import { useProfileContract } from "hooks/useContracts";
 import { useProfile } from "hooks/useProfile";
@@ -9,6 +9,15 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from 'react-redux';
 import { setProfile } from "state/profile";
 import styled from "styled-components";
+import tokens from "constants/tokens";
+import { CREATE_PROFILE_FEE } from "constants/fees";
+import useTokenBalance from "hooks/useTokenBalance";
+import { transformTargetAmount } from "utils/transforms";
+import { APPROVE_STATES, useApproveToken } from "hooks/useApproveToken";
+import { PROFILE_ADDRESS } from "constants/addresses";
+
+const { Text } = Typography;
+const { confirm } = Modal;
 
 const ProfileWrapper = styled.div`
     width: 100%;
@@ -48,8 +57,9 @@ function CreateProfile() {
     const profileContract = useProfileContract();
     const navigate = useNavigate();
     const [form] = Form.useForm();
-    const [isLoading, setIsLoading] = useState(false);
     const dispatch = useDispatch();
+    const { balance: ecuBalance } = useTokenBalance(tokens.ecu.address);
+    const { state: approveState, approve } = useApproveToken(handleOnApproved);
 
     useEffect(() => {
         if (hasProfile) {
@@ -57,22 +67,52 @@ function CreateProfile() {
         }
     }, [hasProfile]);
 
+    function renderConfirmContent() {
+        const canAfford = ecuBalance.gte(CREATE_PROFILE_FEE);
+
+        return (
+            <Space direction="vertical">
+                {!canAfford && <Alert message={t("You don't have enough ECU token for creating account")} type="error"/>}
+                <div>
+                    <Text type="secondary">{t('Create Profile Fee')}: </Text>
+                    <Text>{transformTargetAmount(tokens.ecu.address,CREATE_PROFILE_FEE)}</Text>
+                </div>
+                <div>
+                    <Text type="secondary">{t('Your Balance')}: </Text>
+                    <Text>{transformTargetAmount(tokens.ecu.address, ecuBalance)}</Text>
+                </div>
+            </Space>
+        );
+    }
+
+    function handleOnApproved({ name, contact }) {
+        const canAfford = ecuBalance.gte(CREATE_PROFILE_FEE);
+
+        confirm({
+            title: t('Confirm Transaction'),
+            content: renderConfirmContent(),
+            closable: true,
+            okButtonProps: { disabled: !canAfford },
+            onOk() {
+                return profileContract.createAccount(name, contact).then(r => {
+                    message.success(t('Account created'));
+                    dispatch(setProfile({
+                        name,
+                        contact
+                    }));
+                    navigate('/profile');
+                }).catch(e => {
+                    message.error(t('Error while creating account'));
+                });
+            },
+        });
+    }
+
     const handleOnSubmit = (values) => {
-        setIsLoading(true);
         const name = values.name;
         const contact = values.contact;
 
-        profileContract.createAccount(name, contact).then(r => {
-            message.success(t('Account created'));
-            dispatch(setProfile({
-                name,
-                contact
-            }));
-            navigate('/profile');
-        }).catch(e => {
-            setIsLoading(false);
-            message.error(t('Error while creating account'));
-        });
+        approve(PROFILE_ADDRESS, tokens.ecu.address, CREATE_PROFILE_FEE, { name, contact });
     }
 
     return (
@@ -88,7 +128,13 @@ function CreateProfile() {
                                 <Form.Item name="contact" label={t('Contact Info')} rules={[{ required: true, message: t('contact info is required') }]}>
                                     <Input className="ltr-input" />
                                 </Form.Item>
-                                <SubmitButton type="primary" shape="round" size="large" htmlType="submit" loading={isLoading}>
+                                <SubmitButton
+                                    type="primary"
+                                    shape="round"
+                                    size="large"
+                                    htmlType="submit"
+                                    loading={approveState == APPROVE_STATES.APPROVING}
+                                >
                                     {t('Create Account')}
                                 </SubmitButton>
                             </CreateAccountForm>

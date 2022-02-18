@@ -35,6 +35,7 @@ export function useApproveToken(onApproved, onRejected) {
                         onApproved && onApproved(additionalParams);
                     }).catch(e => {
                         message.error(t('Token approve error'));
+                        console.error(e);
                         setState(APPROVE_STATES.ERROR);
                         onRejected && onRejected(e, additionalParams);
                     })

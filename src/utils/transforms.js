@@ -45,6 +45,8 @@ export function transformTargetAmount(targetAssetAddress, amount, displayDecimal
     switch (targetAssetAddress) {
         case tokens.busd.address:
             return toLocaleNumber(getBalanceAmountInFloat(amount, tokens.busd.decimals, displayDecimals), displayDecimals) + ' ' + tokens.busd.symbol;
+        case tokens.ecu.address:
+            return toLocaleNumber(getBalanceAmountInFloat(amount, tokens.ecu.decimals, displayDecimals), displayDecimals) + ' ' + tokens.ecu.symbol;
         default:
             return "";
     }

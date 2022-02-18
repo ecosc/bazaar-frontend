@@ -7,3 +7,7 @@ export const BIG_NINE = BigNumber.from(9)
 export const BIG_TEN = BigNumber.from(10)
 
 export const ethersToBigNumber = (ethersBn) => new BigNumberJs(ethersBn.toString())
+
+export function expandTo18Decimals(n) {
+    return BigNumber.from(n).mul(BigNumber.from(10).pow(18))
+}
