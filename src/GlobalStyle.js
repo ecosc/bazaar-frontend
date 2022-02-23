@@ -1,11 +1,34 @@
 import { createGlobalStyle } from "styled-components";
 
 const GlobalStyle = createGlobalStyle`
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    
+    ${({ theme }) => theme.dir == 'rtl' && `
+      font-family: 'Roboto', 'Vazir', sans-serif;
+    `}
+    
+    ${({ theme }) => theme.dir == 'ltr' && `
+      font-family: 'Roboto', sans-serif;
+    `}
+  }
+
+  .ant-input {
+    ${({ theme }) => theme.dir == 'rtl' && `
+      font-family: 'Roboto', 'Vazir', sans-serif;
+    `}
+    
+    ${({ theme }) => theme.dir == 'ltr' && `
+      font-family: 'Roboto', sans-serif;
+    `}
+  }
+
   .ant-layout-header {
     background: ${({ theme }) => theme.colors.headerBackground} !important;
     z-index: 1000 !important;
     height: auto !important;
-    border-bottom: 1px solid ${({theme}) => theme.colors.border} !important;
+    border-bottom: 1px solid ${({ theme }) => theme.colors.border} !important;
   }
 
   .ant-layout-header > ul {
@@ -18,6 +41,7 @@ const GlobalStyle = createGlobalStyle`
 
   body {
     background-color: ${({ theme }) => theme.colors.background} !important;
+    background: 
   }
 
   .ant-modal-content {
@@ -90,28 +114,28 @@ const GlobalStyle = createGlobalStyle`
     height: 44px !important;
     padding: 10px;
     border-radius: 25px !important;
-    border: 1px solid ${({theme}) => theme.colors.border} !important;
-    background: ${({theme}) => theme.colors.inputSecondary} !important;
+    border: 1px solid ${({ theme }) => theme.colors.border} !important;
+    background: ${({ theme }) => theme.colors.inputSecondary} !important;
     font-weight: bold;
     line-height: 22px !important;
   }
 
   .ant-select-dropdown {
-    background: ${({theme}) => theme.colors.inputBackground} !important;
-    border: 1px solid ${({theme}) => theme.colors.border} !important;
+    background: ${({ theme }) => theme.colors.inputBackground} !important;
+    border: 1px solid ${({ theme }) => theme.colors.border} !important;
     border-radius: 10px;
   }
 
   .ant-select:not(.ant-select-customize-input) .ant-select-selector {
-    background: ${({theme}) => theme.colors.inputBackground} !important;
+    background: ${({ theme }) => theme.colors.inputBackground} !important;
   }
 
   .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
-    background: ${({theme}) => theme.colors.inputSecondary} !important;
+    background: ${({ theme }) => theme.colors.inputSecondary} !important;
   }
 
   .ant-select-item-option-active:not(.ant-select-item-option-disabled) {
-    background: ${({theme}) => theme.colors.inputSecondary} !important;
+    background: ${({ theme }) => theme.colors.inputSecondary} !important;
   }
 
   .ant-select-selection-item {
@@ -121,7 +145,7 @@ const GlobalStyle = createGlobalStyle`
 
   .ant-card {
     border-radius: 25px !important;
-    border: 1px solid ${({theme}) => theme.colors.border} !important;
+    border: 1px solid ${({ theme }) => theme.colors.border} !important;
   }
 
   .ant-card-actions {
@@ -133,7 +157,7 @@ const GlobalStyle = createGlobalStyle`
     padding: 12px 20px !important;
     font-size: 1rem !important;
     border-radius: 25px !important;
-    background: ${({theme}) => theme.colors.inputBackground} !important;
+    background: ${({ theme }) => theme.colors.inputBackground} !important;
   }
 
   .ant-card-head-title {
@@ -142,11 +166,11 @@ const GlobalStyle = createGlobalStyle`
   }
 
   .ant-switch {
-    background-color: ${({theme}) => theme.colors.inputBackground} !important;
+    background-color: ${({ theme }) => theme.colors.inputBackground} !important;
   }
 
   .ant-switch-checked {
-    background-color: ${({theme}) => theme.colors.primary} !important;
+    background-color: ${({ theme }) => theme.colors.primary} !important;
   }
 
   .ant-btn>.ant-btn-loading-icon .anticon {

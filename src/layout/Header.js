@@ -21,6 +21,7 @@ import connectors, { connectorLocalStorageKey, walletLocalStorageKey } from "con
 import { Wallet } from 'components/Svg/Icons';
 import { useProfile } from "hooks/useProfile";
 import { accountEllipsis } from "utils/transforms";
+import logoURL from 'assets/images/logo.png';
 
 const StyledHeader = styled(Layout.Header)`
   display: flex;
@@ -39,6 +40,18 @@ const StyledHeader = styled(Layout.Header)`
     color: ${({ theme }) => theme.colors.headerText};
   }
 `
+
+const Logo = styled.img`
+  display: inline-block;
+  height: 63px;
+  ${({ theme }) => theme.dir == 'rtl' && `
+    margin-left: 25px;
+  `}
+
+  ${({ theme }) => theme.dir == 'ltr' && `
+    margin-right: 25px;
+  `}
+`;
 
 const HeaderOptions = styled.div`
   position: absolute;
@@ -170,6 +183,7 @@ function AppHeader() {
 
     return (
         <StyledHeader>
+            <Logo src={logoURL} />
             <Menu mode="horizontal" selectedKeys={[location.pathname]} style={{ width: '100%' }}>
                 <Menu.Item key="/" icon={<ShopOutlined />}><Link to={'/'}>{t('Bazaar')}</Link></Menu.Item>
                 <Menu.Item

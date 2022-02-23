@@ -1,20 +1,10 @@
 @import '~antd/dist/antd.variable.min.css';
 @import 'assets/styles/fonts/vazir/font-face.css';
-
-* {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    font-family: 'Roboto', 'Vazir', sans-serif;
-  }
   
 
 /* .ant-menu .ant-menu-sub, .ant-menu.ant-menu, .ant-menu.ant-menu .ant-menu-sub {
     background: #764abc !important;
 } */
-
-.ant-input {
-  font-family: 'Roboto', 'Vazir', sans-serif;
-}
 
 .ant-input-password > input{
   direction: ltr !important;

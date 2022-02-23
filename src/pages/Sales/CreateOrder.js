@@ -151,7 +151,9 @@ function CreateOrder() {
                     <Text type="secondary">{t('Your Balance')}: </Text>
                     <Text>{transformTargetAmount(targetAsset, busdBalance)}</Text>
                 </div>
-                <Text type="warning">* {t("Guarantee amount will be returned to you if there were no conflicts")}</Text>
+                <Alert message={t("Guarantee amount will be returned to you if there were no conflicts")} type="info"/>
+                <Alert message={t("You can withdraw guarantee amount if no one accepted your order")} type="info"/>
+                <Alert message={t("If you cancel the order, guarantee amount will be returned to you after cutting cancellation commission")} type="info"/>
             </Space>
         );
     }
