@@ -4,40 +4,44 @@ import i18n from "i18next";
 import { getLocale } from "localization";
 import { getBalanceAmountInFloat } from "./formatBalance";
 
-export function transformWeight(amount) {
-    const amountInK = amount.toNumber() / 1000;
-    const amountInKRem = amount.toNumber() % 1000;
+export const SOURCE_AMOUNT_DECIMALS = 10;
+
+export function transformWeight(amount, displayDecimals=5) {
+    const amountInK = amount / 1000;
+    const amountInKRem = amount % 1000;
     const { t } = i18n;
 
     if (amountInK < 1) {
-        return `${amount} ${t('Gram')}`
+        return `${toLocaleNumber(amount, displayDecimals)} ${t('Gram')}`
     }
 
     if (amountInKRem === 0) {
-        return `${toLocaleNumber(amountInK)} ${t('Kilogram')}`;
+        return `${toLocaleNumber(amountInK, displayDecimals)} ${t('Kilogram')}`;
     }
 
-    return `${toLocaleNumber(Math.floor(amountInK))} ${t('Kilo')} ${t('And')} ${Math.floor(amountInKRem)} ${t('Gram')}`;
+    return `${toLocaleNumber(Math.floor(amountInK), displayDecimals)} ${t('Kilo')} ${t('And')} ${Math.floor(amountInKRem)} ${t('Gram')}`;
 }
 
-export function transformUnit(sourceAsset, amount) {
+export function transformUnit(sourceAsset, amount, displayDecimals=5) {
     const { t } = i18n;
 
     const unit = sourceAssetsUnits[sourceAsset][0].symbol;
 
-    return `${toLocaleNumber(amount)} ${t(unit)}`;
+    return `${toLocaleNumber(amount, displayDecimals)} ${t(unit)}`;
 }
 
-export function transformSourceAmount(sourceAsset, amount) {
+export function transformSourceAmount(sourceAsset, amount, displayDecimals=5) {
+    const adjustedAmount = getBalanceAmountInFloat(amount, SOURCE_AMOUNT_DECIMALS, displayDecimals);
+
     switch (sourceAsset) {
         case sourceAssets.CARAT_GOLD_18:
         case sourceAssets.CARAT_GOLD_24:
         case sourceAssets.GOLD_MELTED_CASH:
         case sourceAssets.MELTED_BANKING_GOLD:
         case sourceAssets.MELTED_GOLD:
-            return transformWeight(amount);
+            return transformWeight(adjustedAmount);
         default:
-            return transformUnit(sourceAsset, amount);
+            return transformUnit(sourceAsset, adjustedAmount);
     }
 }
 

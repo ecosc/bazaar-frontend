@@ -20,13 +20,6 @@ export default {
         name: 'Tether USD',
         link: 'https://www.binance.com/',
     },
-    wbnb: {
-        address: '0xae13d989dac2f0debff460ac112a837c89baa7cd',
-        decimals: 18,
-        symbol: 'WBNB',
-        name: 'Wrapped BNB',
-        link: 'https://www.binance.com/',
-    },
     eth: {
         address: '0x8babbb98678facc7342735486c851abd7a0d17ca',
         decimals: 18,

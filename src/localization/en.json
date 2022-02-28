@@ -26,5 +26,7 @@
     "Gram": "Gram",
     "Kilogram": "Kilogram",
     "Kilo": "Kilo",
-    "And": "And"
+    "And": "And",
+    "Source Asset": "Asset",
+    "Source Amount": "Amount"
 }

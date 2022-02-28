@@ -153,7 +153,7 @@ function List({ isLoading, isLoadingMore, items, refresh, loadMore, hasMore }) {
                     <Text>{accountEllipsis(item.seller)}</Text>
                 </div>
                 <div>
-                    <Text type="secondary">{t('Buy Fee')}: </Text>
+                    <Text type="secondary">{t('Buy Commission')}: </Text>
                     <Text>{transformTargetAmount(targetAsset, buyFee)}</Text>
                 </div>
                 <div>
@@ -202,7 +202,7 @@ function List({ isLoading, isLoadingMore, items, refresh, loadMore, hasMore }) {
         return (
             <Space direction="vertical">
                 <div>
-                    <Text type="secondary">{t('Buy Fee')}: </Text>
+                    <Text type="secondary">{t('Buy Commission')}: </Text>
                     <Text>{transformTargetAmount(targetAsset, buyFee)}</Text>
                 </div>
                 <div>

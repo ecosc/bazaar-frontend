@@ -13,7 +13,7 @@ import CreateProfileButton from "components/CreateProfileButton";
 import { parseUnits } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
 import useTokenBalance, { FetchStatus } from "hooks/useTokenBalance";
-import { transformTargetAmount } from "utils/transforms";
+import { SOURCE_AMOUNT_DECIMALS, transformTargetAmount } from "utils/transforms";
 import { calcGuaranteeAmount, calcSellFee } from "utils/fees";
 import { APPROVE_STATES, useApproveToken } from "hooks/useApproveToken";
 import { useEffect, useState } from "react";
@@ -94,7 +94,7 @@ function CreateOrder() {
     const getFormValues = () => {
         const values = form.getFieldsValue();
 
-        let sourceAmount = BigNumber.from(values.sourceAmount);
+        let sourceAmount = parseUnits(values.sourceAmount, SOURCE_AMOUNT_DECIMALS);
         const targetAmount = parseUnits(values.targetAmount, tokens.busd.decimals);
         let timeout = BigNumber.from(parseInt(values.timeout));
         const sourceAsset = values.sourceAsset;
@@ -140,7 +140,7 @@ function CreateOrder() {
                     <Text>{transformTargetAmount(targetAsset, guaranteeAmount)}</Text>
                 </div>
                 <div>
-                    <Text type="secondary">{t('Sell Fee')}: </Text>
+                    <Text type="secondary">{t('Sell Commission')}: </Text>
                     <Text>{transformTargetAmount(targetAsset, sellFee)}</Text>
                 </div>
                 <div>

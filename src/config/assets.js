@@ -1,4 +1,4 @@
-import { DollarCircleOutlined, GoldOutlined } from '@ant-design/icons';
+import { DollarCircleOutlined, GoldOutlined, ExperimentOutlined } from '@ant-design/icons';
 
 export const sourceAssets = {
     GOLD_OUNCE: 0,
@@ -14,7 +14,22 @@ export const sourceAssets = {
     USD: 10,
     MANAT: 11,
     DIRHAM: 12,
-    DINAR_IRAQI: 13
+    DINAR_IRAQI: 13,
+    TURKISH_LIRA: 14,
+    POLYSTYRENE: 15,
+    BITUMEN: 16,
+    BASE_OIL: 17,
+    POLYPROPYLENE: 18,
+    HDPE: 19, // High Density Polyethylene
+    LDPE: 20, // Low Density Polyethylene
+    NITRIC_ACID: 21,
+    SODIUM_HYDROXIDE: 22,
+    UREA: 23,
+    SODIUM_CARBONATE: 24,
+    SODIUM_SULFATE: 25,
+    PARAFFIN_WAX: 26,
+    EPOXY_RESIN: 27,
+    STYRENE: 28,
 };
 
 export const sourceAssetNames = {
@@ -29,9 +44,24 @@ export const sourceAssetNames = {
     [sourceAssets.GOLD_COIN_CASH]: 'Gold Coin Cash',
     [sourceAssets.GOLD_COIN]: 'Gold Coin',
     [sourceAssets.USD]: 'USA Dollar',
-    [sourceAssets.MANAT]: 'Manat',
-    [sourceAssets.DIRHAM]: 'Dirham',
+    [sourceAssets.MANAT]: 'Turkmen Manat',
+    [sourceAssets.DIRHAM]: 'Emirates Dirham',
     [sourceAssets.DINAR_IRAQI]: 'Iraqi Dinar',
+    [sourceAssets.TURKISH_LIRA]: 'Turkish lira',
+    [sourceAssets.POLYSTYRENE]: 'Polystyrene',
+    [sourceAssets.BITUMEN]: 'Industrial Bitumen',
+    [sourceAssets.BASE_OIL]: 'Base Oil',
+    [sourceAssets.POLYPROPYLENE]: 'Polypropylene',
+    [sourceAssets.HDPE]: 'High Density Polyethylene',
+    [sourceAssets.LDPE]: 'Low Density Polyethylene',
+    [sourceAssets.NITRIC_ACID]: 'Nitric Acid',
+    [sourceAssets.SODIUM_HYDROXIDE]: 'Sodium Hydroxide',
+    [sourceAssets.UREA]: 'Urea',
+    [sourceAssets.SODIUM_CARBONATE]: 'Sodium Carbonate',
+    [sourceAssets.SODIUM_SULFATE]: 'Sodium Sulfate',
+    [sourceAssets.PARAFFIN_WAX]: 'Paraffin Wax',
+    [sourceAssets.EPOXY_RESIN]: 'Epoxy Resin',
+    [sourceAssets.STYRENE]: 'Styrene',
 };
 
 export const units = {
@@ -67,9 +97,17 @@ export const units = {
         id: 'MANAT',
         symbol: 'Manat'
     },
+    LIRA: {
+        id: 'LIRA',
+        symbol: 'Lira'
+    },
     COIN: {
         id: 'COIN',
         symbol: 'Coin'
+    },
+    TONNAGE: {
+        id: 'TONNAGE',
+        symbol: 'Tonnage'
     },
 };
 
@@ -88,6 +126,21 @@ export const sourceAssetsUnits = {
     [sourceAssets.MANAT]: [units.MANAT],
     [sourceAssets.DIRHAM]: [units.DIRHAM],
     [sourceAssets.DINAR_IRAQI]: [units.DINAR],
+    [sourceAssets.TURKISH_LIRA]: [units.LIRA],
+    [sourceAssets.POLYSTYRENE]: [units.TONNAGE],
+    [sourceAssets.BITUMEN]: [units.TONNAGE],
+    [sourceAssets.BASE_OIL]: [units.TONNAGE],
+    [sourceAssets.POLYPROPYLENE]: [units.TONNAGE],
+    [sourceAssets.HDPE]: [units.TONNAGE],
+    [sourceAssets.LDPE]: [units.TONNAGE],
+    [sourceAssets.NITRIC_ACID]: [units.TONNAGE],
+    [sourceAssets.SODIUM_HYDROXIDE]: [units.TONNAGE],
+    [sourceAssets.UREA]: [units.TONNAGE],
+    [sourceAssets.SODIUM_CARBONATE]: [units.TONNAGE],
+    [sourceAssets.SODIUM_SULFATE]: [units.TONNAGE],
+    [sourceAssets.PARAFFIN_WAX]: [units.TONNAGE],
+    [sourceAssets.EPOXY_RESIN]: [units.TONNAGE],
+    [sourceAssets.STYRENE]: [units.TONNAGE],
 };
 
 export const bazaars = {
@@ -117,8 +170,30 @@ export const bazaars = {
             sourceAssets.MANAT,
             sourceAssets.DIRHAM,
             sourceAssets.DINAR_IRAQI,
+            sourceAssets.TURKISH_LIRA
         ]
     },
+    PETROCHEMICAL: {
+        id: 'PETROCHEMICAL',
+        symbol: 'Petrochemical',
+        icon: <ExperimentOutlined />,
+        assets: [
+            sourceAssets.POLYSTYRENE,
+            sourceAssets.BITUMEN,
+            sourceAssets.BASE_OIL,
+            sourceAssets.POLYPROPYLENE,
+            sourceAssets.HDPE,
+            sourceAssets.LDPE,
+            sourceAssets.NITRIC_ACID,
+            sourceAssets.SODIUM_HYDROXIDE,
+            sourceAssets.UREA,
+            sourceAssets.SODIUM_CARBONATE,
+            sourceAssets.SODIUM_SULFATE,
+            sourceAssets.PARAFFIN_WAX,
+            sourceAssets.EPOXY_RESIN,
+            sourceAssets.STYRENE,
+        ],
+    }
 };
 
 export function getUnitByID(id = 'KILOGRAM') {
