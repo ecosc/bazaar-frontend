@@ -24,8 +24,9 @@ import tokens from 'constants/tokens';
 import { useBazaarContract } from 'hooks/useContracts';
 import { APPROVE_STATES, useApproveToken } from 'hooks/useApproveToken';
 import { useNavigate } from 'react-router-dom';
-import { orderStates } from 'utils/order';
+import { orderStateInString, orderStates } from 'utils/order';
 import { sourceAssetNames } from 'config/assets';
+import ProfileInfoButton from 'components/ProfileInfoButton';
 
 const { Text } = Typography;
 const { confirm } = Modal;
@@ -127,6 +128,10 @@ function List({ isLoading, items, refresh, loadMore, isLoadingMore, hasMore }) {
                     <Text>{accountEllipsis(item.seller)}</Text>
                 </Column>
                 <Column>
+                    <Text type="secondary">{t('Status')}</Text>
+                    <Text>{orderStateInString(item.state)}</Text>
+                </Column>
+                <Column>
                     <Text type="secondary">{t('Remaining Time')}</Text>
                     <Text>{remainingTime <= 0 ? t('Expired') : secondsToTime(remainingTime)}</Text>
                 </Column>
@@ -193,11 +198,19 @@ function List({ isLoading, items, refresh, loadMore, isLoadingMore, hasMore }) {
     const renderItems = () => {
         return items.map(item => (
             <StyledPanel header={renderHeader(item)} key={item.id}>
-                <BuyButton
-                    onClick={handleBuyClick(item)}
-                    loading={approveState === APPROVE_STATES.APPROVING}
-                    disabled={!isItemBuyable(item)}
-                />
+                <Space direction='horizontal'>
+                    <BuyButton
+                        onClick={handleBuyClick(item)}
+                        loading={approveState === APPROVE_STATES.APPROVING}
+                        disabled={!isItemBuyable(item)}
+                    />
+                    <ProfileInfoButton
+                        address={item.seller}
+                        modalTitle={t('Seller Info')}
+                        buttonTitle={t('Seller Info')}
+                        isSeller
+                    />
+                </Space>
             </StyledPanel>
         ));
     }

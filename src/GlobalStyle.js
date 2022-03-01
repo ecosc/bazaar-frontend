@@ -105,6 +105,10 @@ const GlobalStyle = createGlobalStyle`
     `}
   }
 
+  .ant-select-item-group {
+    font-size: 1rem !important;
+  }
+
   .ant-select-selector {
     height: 52px !important;
     border-radius: 25px !important;

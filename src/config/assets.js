@@ -1,4 +1,9 @@
-import { DollarCircleOutlined, GoldOutlined, ExperimentOutlined } from '@ant-design/icons';
+import {
+    DollarCircleOutlined,
+    GoldOutlined,
+    ExperimentOutlined,
+    SlidersOutlined
+} from '@ant-design/icons';
 
 export const sourceAssets = {
     GOLD_OUNCE: 0,
@@ -30,6 +35,13 @@ export const sourceAssets = {
     PARAFFIN_WAX: 26,
     EPOXY_RESIN: 27,
     STYRENE: 28,
+    STEEL: 29,
+    IRON_ORE: 30,
+    CONCENTRATE: 31,
+    IRON_PELLET: 32,
+    COPPER: 33,
+    ZINC: 34,
+    ALUMINIUM: 35,
 };
 
 export const sourceAssetNames = {
@@ -47,7 +59,7 @@ export const sourceAssetNames = {
     [sourceAssets.MANAT]: 'Turkmen Manat',
     [sourceAssets.DIRHAM]: 'Emirates Dirham',
     [sourceAssets.DINAR_IRAQI]: 'Iraqi Dinar',
-    [sourceAssets.TURKISH_LIRA]: 'Turkish lira',
+    [sourceAssets.TURKISH_LIRA]: 'Turkish Lira',
     [sourceAssets.POLYSTYRENE]: 'Polystyrene',
     [sourceAssets.BITUMEN]: 'Industrial Bitumen',
     [sourceAssets.BASE_OIL]: 'Base Oil',
@@ -62,6 +74,13 @@ export const sourceAssetNames = {
     [sourceAssets.PARAFFIN_WAX]: 'Paraffin Wax',
     [sourceAssets.EPOXY_RESIN]: 'Epoxy Resin',
     [sourceAssets.STYRENE]: 'Styrene',
+    [sourceAssets.STEEL]: 'Steel',
+    [sourceAssets.IRON_ORE]: 'Iron Ore',
+    [sourceAssets.CONCENTRATE]: 'Concentrate',
+    [sourceAssets.IRON_PELLET]: 'Iron Pellet',
+    [sourceAssets.COPPER]: 'Copper',
+    [sourceAssets.ZINC]: 'Zinc',
+    [sourceAssets.ALUMINIUM]: 'Aluminium',
 };
 
 export const units = {
@@ -141,6 +160,13 @@ export const sourceAssetsUnits = {
     [sourceAssets.PARAFFIN_WAX]: [units.TONNAGE],
     [sourceAssets.EPOXY_RESIN]: [units.TONNAGE],
     [sourceAssets.STYRENE]: [units.TONNAGE],
+    [sourceAssets.STEEL]: [units.GRAM, units.KILOGRAM],
+    [sourceAssets.IRON_ORE]: [units.GRAM, units.KILOGRAM],
+    [sourceAssets.CONCENTRATE]: [units.GRAM, units.KILOGRAM],
+    [sourceAssets.IRON_PELLET]: [units.GRAM, units.KILOGRAM],
+    [sourceAssets.COPPER]: [units.GRAM, units.KILOGRAM],
+    [sourceAssets.ZINC]: [units.GRAM, units.KILOGRAM],
+    [sourceAssets.ALUMINIUM]: [units.GRAM, units.KILOGRAM],
 };
 
 export const bazaars = {
@@ -193,7 +219,21 @@ export const bazaars = {
             sourceAssets.EPOXY_RESIN,
             sourceAssets.STYRENE,
         ],
-    }
+    },
+    METAL: {
+        id: 'METAL',
+        symbol: 'Metal',
+        icon: <SlidersOutlined />,
+        assets: [
+            sourceAssets.STEEL,
+            sourceAssets.IRON_ORE,
+            sourceAssets.CONCENTRATE,
+            sourceAssets.IRON_PELLET,
+            sourceAssets.COPPER,
+            sourceAssets.ZINC,
+            sourceAssets.ALUMINIUM
+        ]
+    },
 };
 
 export function getUnitByID(id = 'KILOGRAM') {

@@ -68,6 +68,30 @@ function Bazaar() {
         setFilters(prev => ({ ...prev, sourceAssets: bazaars[value].assets }));
     }
 
+    const onShowHistoryChange = (showHistory) => {
+        if (showHistory) {
+            setFilters(prev => ({
+                ...prev,
+                states: [
+                    orderStates.Placed,
+                    orderStates.Sold,
+                    orderStates.Finished,
+                    orderStates.Closed,
+                    orderStates.Withdrew,
+                    orderStates.CancelledBySeller,
+                    orderStates.CancelledByBuyer,
+                ],
+                withExpireds: true,
+            }));
+        } else {
+            setFilters(prev => ({
+                ...prev,
+                states: defaultFilters.states,
+                withExpireds: false,
+            }));
+        }
+    }
+
     return (
         <Wrapper>
             <PageHeader title={t('Online Transactions')} subtitle={t('Transactions that are live and you can buy with tiny fee')} />
@@ -109,6 +133,10 @@ function Bazaar() {
                     <div>
                         <Text type="secondary">{t('Auto Refresh')}: </Text>
                         <Switch onChange={(v) => setAutoRefresh(v)} checked={autoRefresh} />
+                    </div>
+                    <div>
+                        <Text type="secondary">{t('History')}: </Text>
+                        <Switch onChange={onShowHistoryChange} checked={filters.withExpireds} />
                     </div>
                     <Button
                         icon={<ReloadOutlined />}

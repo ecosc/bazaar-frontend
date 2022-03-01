@@ -72,10 +72,10 @@ function CreateProfile() {
 
         return (
             <Space direction="vertical">
-                {!canAfford && <Alert message={t("You don't have enough ECU token for creating account")} type="error"/>}
+                {!canAfford && <Alert message={t("You don't have enough ECU token for creating account")} type="error" />}
                 <div>
                     <Text type="secondary">{t('Create Profile Fee')}: </Text>
-                    <Text>{transformTargetAmount(tokens.ecu.address,CREATE_PROFILE_FEE)}</Text>
+                    <Text>{transformTargetAmount(tokens.ecu.address, CREATE_PROFILE_FEE)}</Text>
                 </div>
                 <div>
                     <Text type="secondary">{t('Your Balance')}: </Text>
@@ -121,7 +121,13 @@ function CreateProfile() {
                 <ProfileCard title={t('Create Profile')} bordered={false}>
                     {
                         !account ? <ConnectWalletButton /> : (
-                            <CreateAccountForm form={form} name="create-account-form" onFinish={handleOnSubmit}>
+                            <CreateAccountForm
+                                form={form}
+                                name="create-account-form"
+                                onFinish={handleOnSubmit}
+                                layout="vertical"
+                                requiredMark={false}
+                            >
                                 <Form.Item name="name" label={t('Name')} rules={[{ required: true, message: t('name is required') }]}>
                                     <Input className="ltr-input" />
                                 </Form.Item>

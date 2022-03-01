@@ -273,6 +273,7 @@ function List({ isLoading, isLoadingMore, items, refresh, loadMore, hasMore }) {
                         address={item.seller}
                         modalTitle={t('Seller Info')}
                         buttonTitle={t('Seller Info')}
+                        isSeller
                     />
                 </Space>
             </StyledPanel>

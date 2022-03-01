@@ -771,6 +771,79 @@
       ],
       "stateMutability": "view",
       "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "seller",
+          "type": "address"
+        }
+      ],
+      "name": "sellerMetrics",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "totalSaleOrders",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "soldOrders",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "deliveredOrders",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "cancelledSeller",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "cancelledBuyer",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "buyer",
+          "type": "address"
+        }
+      ],
+      "name": "buyerMetrics",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "boughtOrders",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "deliveredOrders",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "cancelledSeller",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "cancelledBuyer",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
     }
   ]
 }

@@ -3,19 +3,84 @@ import { Button, Modal, Space, Typography } from "antd";
 import { useTranslation } from "react-i18next";
 import { useState } from 'react';
 import { getProfile } from 'state/profile/helpers';
+import { getBazaarContract } from 'hooks/useContracts';
 
 const { info } = Modal;
 const { Text } = Typography;
 
-function ProfileInfoButton({ address, onClosed, modalTitle, onClick, buttonTitle, ...props }) {
+async function getSellerInfo(seller) {
+    const bazaarContract = getBazaarContract();
+
+    return bazaarContract.sellerMetrics(seller);
+}
+
+async function getBuyerInfo(buyer) {
+    const bazaarContract = getBazaarContract();
+
+    return bazaarContract.buyerMetrics(buyer);
+}
+
+function renderSellerMetrics(t, metrics) {
+    return (
+        <>
+            <div>
+                <Text type="secondary">{t('Total Sale Orders')}: </Text>
+                <Text>{metrics.totalSaleOrders.toNumber()}</Text>
+            </div>
+            <div>
+                <Text type="secondary">{t('Total Sold Orders')}: </Text>
+                <Text>{metrics.soldOrders.toNumber()}</Text>
+            </div>
+            <div>
+                <Text type="secondary">{t('Total Delivered Orders')}: </Text>
+                <Text>{metrics.deliveredOrders.toNumber()}</Text>
+            </div>
+            <div>
+                <Text type="secondary">{t('Total Cancelled Orders')}: </Text>
+                <Text>{metrics.cancelledSeller.toNumber()}</Text>
+            </div>
+            <div>
+                <Text type="secondary">{t('Total Cancelled Orders(By Buyer)')}: </Text>
+                <Text>{metrics.cancelledBuyer.toNumber()}</Text>
+            </div>
+        </>
+    );
+}
+
+function renderBuyerMetrics(t, metrics) {
+    return (
+        <>
+            <div>
+                <Text type="secondary">{t('Total Bought Orders')}: </Text>
+                <Text>{metrics.boughtOrders.toNumber()}</Text>
+            </div>
+            <div>
+                <Text type="secondary">{t('Total Delivered Orders')}: </Text>
+                <Text>{metrics.deliveredOrders.toNumber()}</Text>
+            </div>
+            <div>
+                <Text type="secondary">{t('Total Cancelled Orders')}: </Text>
+                <Text>{metrics.cancelledBuyer.toNumber()}</Text>
+            </div>
+            <div>
+                <Text type="secondary">{t('Total Cancelled Orders(By Seller)')}: </Text>
+                <Text>{metrics.cancelledSeller.toNumber()}</Text>
+            </div>
+        </>
+    );
+}
+
+function ProfileInfoButton({ address, onClosed, modalTitle, onClick, buttonTitle, isSeller, ...props }) {
     const { t } = useTranslation();
-    const [ isLoading, setIsLoading ] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleOnClick = (e) => {
         setIsLoading(true);
         onClick && onClick(e);
 
-        getProfile(address).then((profile) => {
+        const calls = [getProfile(address), isSeller ? getSellerInfo(address) : getBuyerInfo(address)];
+
+        Promise.all(calls).then(([profile, metrics]) => {
             info({
                 title: modalTitle,
                 closable: true,
@@ -34,8 +99,10 @@ function ProfileInfoButton({ address, onClosed, modalTitle, onClick, buttonTitle
                             <Text type="secondary">{t('Contact Info')}: </Text>
                             <Text copyable>{[profile.contact]}</Text>
                         </div>
+                        {
+                            isSeller ? renderSellerMetrics(t, metrics) : renderBuyerMetrics(t, metrics)
+                        }
                     </Space>
-
                 ),
                 onOk() {
                     onClosed && onClosed();
@@ -43,7 +110,7 @@ function ProfileInfoButton({ address, onClosed, modalTitle, onClick, buttonTitle
                 onCancel() {
                     onClosed && onClosed();
                 },
-            });
+            })
         }).finally(() => setIsLoading(false));
     }
 
@@ -67,6 +134,7 @@ ProfileInfoButton.propTypes = {
     onClosed: PropTypes.func,
     modalTitle: PropTypes.string,
     buttonTitle: PropTypes.string,
+    isSeller: PropTypes.bool,
 };
 
 export default ProfileInfoButton;
