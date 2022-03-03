@@ -160,13 +160,13 @@ export const sourceAssetsUnits = {
     [sourceAssets.PARAFFIN_WAX]: [units.TONNAGE],
     [sourceAssets.EPOXY_RESIN]: [units.TONNAGE],
     [sourceAssets.STYRENE]: [units.TONNAGE],
-    [sourceAssets.STEEL]: [units.GRAM, units.KILOGRAM],
-    [sourceAssets.IRON_ORE]: [units.GRAM, units.KILOGRAM],
-    [sourceAssets.CONCENTRATE]: [units.GRAM, units.KILOGRAM],
-    [sourceAssets.IRON_PELLET]: [units.GRAM, units.KILOGRAM],
-    [sourceAssets.COPPER]: [units.GRAM, units.KILOGRAM],
-    [sourceAssets.ZINC]: [units.GRAM, units.KILOGRAM],
-    [sourceAssets.ALUMINIUM]: [units.GRAM, units.KILOGRAM],
+    [sourceAssets.STEEL]: [units.TONNAGE],
+    [sourceAssets.IRON_ORE]: [units.TONNAGE],
+    [sourceAssets.CONCENTRATE]: [units.TONNAGE],
+    [sourceAssets.IRON_PELLET]: [units.TONNAGE],
+    [sourceAssets.COPPER]: [units.TONNAGE],
+    [sourceAssets.ZINC]: [units.TONNAGE],
+    [sourceAssets.ALUMINIUM]: [units.TONNAGE],
 };
 
 export const bazaars = {
