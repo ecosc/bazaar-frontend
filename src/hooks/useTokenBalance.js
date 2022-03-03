@@ -14,6 +14,12 @@ export const FetchStatus = {
   FAILED: 'failed',
 }
 
+export const getTokenBalance = async (tokenAddress, account) => {
+  const contract = getBep20Contract(tokenAddress);
+
+  return contract.balanceOf(account);
+}
+
 const useTokenBalance = (tokenAddress) => {
   const { NOT_FETCHED, SUCCESS, FAILED } = FetchStatus
   const [balanceState, setBalanceState] = useState({
@@ -27,7 +33,7 @@ const useTokenBalance = (tokenAddress) => {
     const fetchBalance = async () => {
       const contract = getBep20Contract(tokenAddress)
       try {
-        const res = await contract.balanceOf(account)
+        const res = await contract.balanceOf(account);
         setBalanceState({ balance: res, fetchStatus: SUCCESS })
       } catch (e) {
         console.error(e)

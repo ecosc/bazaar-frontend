@@ -12,12 +12,13 @@ import { useBazaarContract } from "hooks/useContracts";
 import CreateProfileButton from "components/CreateProfileButton";
 import { parseUnits } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
-import useTokenBalance, { FetchStatus } from "hooks/useTokenBalance";
 import { SOURCE_AMOUNT_DECIMALS, transformTargetAmount } from "utils/transforms";
 import { calcGuaranteeAmount, calcSellFee } from "utils/fees";
 import { APPROVE_STATES, useApproveToken } from "hooks/useApproveToken";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { bazaars, sourceAssetNames, sourceAssets, sourceAssetsUnits, units } from "config/assets";
+import { BIG_ZERO } from "utils/bigNumber";
+import { getTokenBalance } from "hooks/useTokenBalance";
 
 const { Option, OptGroup } = Select;
 const { confirm } = Modal;
@@ -73,6 +74,21 @@ const InlinedFormItem = styled(Form.Item)`
     `}
 `
 
+const TokenIcon = styled.img`
+    width: 24px;
+    ${({ theme }) => theme.dir == 'rtl' && `
+        margin-left: 10px;
+    `}
+    ${({ theme }) => theme.dir == 'ltr' && `
+        margin-right: 10px;
+    `}
+`;
+
+const TokenOption = styled.div`
+    display: flex;
+    align-items: center;
+`;
+
 const initialValues = {
     sourceAsset: sourceAssets.CARAT_GOLD_18,
     targetAsset: tokens.busd.address,
@@ -82,12 +98,12 @@ const initialValues = {
 
 function CreateOrder() {
     const { t } = useTranslation();
-    const { hasProfile, profile, isLoading: isProfileLoading } = useProfile();
+    const { hasProfile } = useProfile();
     const { account } = useWeb3React();
+    const [loadingBalance, setLoadingBalance] = useState(false);
     const navigate = useNavigate();
     const [form] = Form.useForm();
     const bazaarContract = useBazaarContract();
-    const { balance: busdBalance, fetchStatus: busdBalanceStatus } = useTokenBalance(tokens.busd.address);
     const { state: approveState, approve } = useApproveToken(handleOnApproved);
     const [sourceAsset, setSourceAsset] = useState(initialValues.sourceAsset);
 
@@ -121,7 +137,7 @@ function CreateOrder() {
         };
     }
 
-    const renderConfirmContent = () => {
+    const renderConfirmContent = (balance) => {
         const {
             targetAmount,
             targetAsset
@@ -130,11 +146,11 @@ function CreateOrder() {
         const guaranteeAmount = calcGuaranteeAmount(targetAmount);
         const sellFee = calcSellFee(targetAmount);
         const totalIncome = targetAmount.sub(sellFee);
-        const canAfford = busdBalance.gte(guaranteeAmount);
+        const canAfford = balance.gte(guaranteeAmount);
 
         return (
             <Space direction="vertical">
-                {!canAfford && <Alert message={t("You don't have enough token for placing order")} type="error"/>}
+                {!canAfford && <Alert message={t("You don't have enough token for placing order")} type="error" />}
                 <div>
                     <Text type="secondary">{t('Guarantee Amount')}: </Text>
                     <Text>{transformTargetAmount(targetAsset, guaranteeAmount)}</Text>
@@ -149,16 +165,16 @@ function CreateOrder() {
                 </div>
                 <div>
                     <Text type="secondary">{t('Your Balance')}: </Text>
-                    <Text>{transformTargetAmount(targetAsset, busdBalance)}</Text>
+                    <Text>{transformTargetAmount(targetAsset, balance)}</Text>
                 </div>
-                <Alert message={t("Guarantee amount will be returned to you if there were no conflicts")} type="info"/>
-                <Alert message={t("You can withdraw guarantee amount if no one accepted your order")} type="info"/>
-                <Alert message={t("If you cancel the order, guarantee amount will be returned to you after cutting cancellation commission")} type="info"/>
+                <Alert message={t("Guarantee amount will be returned to you if there were no conflicts")} type="info" />
+                <Alert message={t("You can withdraw guarantee amount if no one accepted your order")} type="info" />
+                <Alert message={t("If you cancel the order, guarantee amount will be returned to you after cutting cancellation commission")} type="info" />
             </Space>
         );
     }
 
-    function handleOnApproved() {
+    function handleOnApproved(balance) {
         const {
             sourceAsset,
             sourceAmount,
@@ -168,12 +184,12 @@ function CreateOrder() {
         } = getFormValues();
 
         const guaranteeAmount = calcGuaranteeAmount(targetAmount);
-        const canAfford = busdBalance.gte(guaranteeAmount);
+        const canAfford = balance.gte(guaranteeAmount);
 
         confirm({
             title: t('Confirm Transaction'),
             icon: <ExclamationCircleOutlined />,
-            content: renderConfirmContent(),
+            content: renderConfirmContent(balance),
             closable: true,
             okButtonProps: { disabled: !canAfford },
             onOk() {
@@ -193,11 +209,22 @@ function CreateOrder() {
         });
     }
 
-    const handleOnSubmit = (values) => {
+    const handleOnSubmit = async (values) => {
         const { targetAmount, targetAsset } = getFormValues();
         const guaranteeAmount = calcGuaranteeAmount(targetAmount);
+        let balance;
 
-        approve(BAZAAR_ADDRESS, targetAsset, guaranteeAmount);
+        setLoadingBalance(true);
+
+        try {
+            balance = await getTokenBalance(targetAsset, account);
+        } catch {
+            balance = BIG_ZERO;
+        }
+
+        approve(BAZAAR_ADDRESS, targetAsset, guaranteeAmount, balance);
+
+        setLoadingBalance(false);
     }
 
     const handleSourceAssetChange = (value) => {
@@ -225,6 +252,29 @@ function CreateOrder() {
         return units.map(({ id, symbol }) => (
             <Option value={id} key={id}>{t(symbol)}</Option>
         ))
+    }
+
+    const renderTokenOption = (id, token) => {
+        return (
+            <Option
+                key={id}
+                value={token.address}
+                label={(
+                    <>
+                        <TokenIcon src={`/images/tokens/${token.address}.png`} />
+                        {token.symbol}
+                    </>
+                )}
+            >
+                <TokenOption>
+                    <TokenIcon src={`/images/tokens/${token.address}.png`} />
+                    <div>
+                        <div>{token.symbol}</div>
+                        <Text type="secondary">{token.name}</Text>
+                    </div>
+                </TokenOption>
+            </Option>
+        );
     }
 
     return (
@@ -261,8 +311,12 @@ function CreateOrder() {
                                         <Input type={'number'} className="ltr-input" />
                                     </InlinedFormItem>
                                     <InlinedFormItem name="targetAsset" label={t('Target Asset')} rules={[{ required: true }]}>
-                                        <Select>
-                                            <Option value={tokens.busd.address}>{t('BUSD')}</Option>
+                                        <Select optionLabelProp="label">
+                                            {
+                                                Object.entries(tokens).map(([id, token]) => {
+                                                    return renderTokenOption(id, token);
+                                                })
+                                            }
                                         </Select>
                                     </InlinedFormItem>
                                 </Form.Item>
@@ -278,7 +332,7 @@ function CreateOrder() {
                                         </Select>
                                     </InlinedFormItem>
                                 </Form.Item>
-                                <SubmitButton type="primary" shape="round" size="large" htmlType="submit" loading={approveState == APPROVE_STATES.APPROVING}>
+                                <SubmitButton type="primary" shape="round" size="large" htmlType="submit" loading={approveState == APPROVE_STATES.APPROVING || loadingBalance}>
                                     {t('Place Order')}
                                 </SubmitButton>
                             </CreateOrderForm>

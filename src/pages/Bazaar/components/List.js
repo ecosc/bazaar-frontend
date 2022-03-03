@@ -10,23 +10,25 @@ import {
     Space,
     message,
     Empty,
-    Button
+    Button,
+    Alert
 } from "antd";
 import styled from "styled-components";
 import BuyButton from "components/BuyButton";
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { accountEllipsis, secondsToTime, transformSourceAmount, transformTargetAmount } from "utils/transforms";
 import { calcBuyFee } from 'utils/fees';
 import { BAZAAR_ADDRESS } from 'constants/addresses';
-import useTokenBalance from 'hooks/useTokenBalance';
-import tokens from 'constants/tokens';
+import { getTokenBalance } from 'hooks/useTokenBalance';
 import { useBazaarContract } from 'hooks/useContracts';
 import { APPROVE_STATES, useApproveToken } from 'hooks/useApproveToken';
 import { useNavigate } from 'react-router-dom';
 import { orderStateInString, orderStates } from 'utils/order';
 import { sourceAssetNames } from 'config/assets';
 import ProfileInfoButton from 'components/ProfileInfoButton';
+import { useWeb3React } from '@web3-react/core';
+import { BIG_ZERO } from 'utils/bigNumber';
 
 const { Text } = Typography;
 const { confirm } = Modal;
@@ -71,8 +73,9 @@ const Column = styled.div`
 
 function List({ isLoading, items, refresh, loadMore, isLoadingMore, hasMore }) {
     const { t } = useTranslation();
-    const { balance: busdBalance } = useTokenBalance(tokens.busd.address);
+    const [loadingBalance, setLoadingBalance] = useState(false);
     const bazaarContract = useBazaarContract();
+    const { account } = useWeb3React();
     const navigate = useNavigate();
 
     const { state: approveState, approve } = useApproveToken(handleOnApproved);
@@ -139,7 +142,7 @@ function List({ isLoading, items, refresh, loadMore, isLoadingMore, hasMore }) {
         );
     }
 
-    function renderConfirmContent(item) {
+    function renderConfirmContent(item, balance) {
         const {
             targetAmount,
             targetAsset
@@ -147,9 +150,11 @@ function List({ isLoading, items, refresh, loadMore, isLoadingMore, hasMore }) {
 
         const buyFee = calcBuyFee(targetAmount);
         const totalPrice = targetAmount.add(buyFee);
+        const canAfford = balance.gte(totalPrice);
 
         return (
             <Space direction="vertical">
+                {!canAfford && <Alert message={t("You don't have enough token for buying order")} type="error" />}
                 <div>
                     <Text type="secondary">{t('Buy Commission')}: </Text>
                     <Text>{transformTargetAmount(targetAsset, buyFee)}</Text>
@@ -160,17 +165,26 @@ function List({ isLoading, items, refresh, loadMore, isLoadingMore, hasMore }) {
                 </div>
                 <div>
                     <Text type="secondary">{t('Your Balance')}: </Text>
-                    <Text>{transformTargetAmount(targetAsset, busdBalance)}</Text>
+                    <Text>{transformTargetAmount(targetAsset, balance)}</Text>
                 </div>
             </Space>
         );
     }
 
-    function handleOnApproved(item) {
+    function handleOnApproved({ item, balance }) {
+        const {
+            targetAmount,
+        } = item;
+
+        const buyFee = calcBuyFee(targetAmount);
+        const totalPrice = targetAmount.add(buyFee);
+        const canAfford = balance.gte(totalPrice);
+
         confirm({
             title: t('Confirm Transaction'),
             icon: <ExclamationCircleOutlined />,
-            content: renderConfirmContent(item),
+            content: renderConfirmContent(item, balance),
+            okButtonProps: { disabled: !canAfford },
             onOk() {
                 return bazaarContract.buy(item.id).
                     then(() => {
@@ -186,12 +200,23 @@ function List({ isLoading, items, refresh, loadMore, isLoadingMore, hasMore }) {
     }
 
     const handleBuyClick = (item) => {
-        return () => {
+        return async () => {
             const { targetAmount, targetAsset } = item;
             const buyFee = calcBuyFee(targetAmount);
             const totalPrice = buyFee.add(targetAmount);
+            let balance;
 
-            approve(BAZAAR_ADDRESS, targetAsset, totalPrice, item);
+            setLoadingBalance(true);
+
+            try {
+                balance = await getTokenBalance(targetAsset, account);
+            } catch {
+                balance = BIG_ZERO;
+            }
+
+            approve(BAZAAR_ADDRESS, targetAsset, totalPrice, { item, balance });
+
+            setLoadingBalance(false);
         }
     }
 
@@ -201,7 +226,7 @@ function List({ isLoading, items, refresh, loadMore, isLoadingMore, hasMore }) {
                 <Space direction='horizontal'>
                     <BuyButton
                         onClick={handleBuyClick(item)}
-                        loading={approveState === APPROVE_STATES.APPROVING}
+                        loading={approveState === APPROVE_STATES.APPROVING || loadingBalance}
                         disabled={!isItemBuyable(item)}
                     />
                     <ProfileInfoButton

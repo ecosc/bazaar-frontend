@@ -14,6 +14,7 @@
     "Please authorize to access your account": "برای استفاده از امکانات سایت نیاز به اتصال کیف پول دارید",
     "The connector config is wrong": "تنظیمات اشتباه است",
     "You don't have enough ECU token for creating account": "موجودی ECU شما برای ایجاد حساب کاربری کافی نمی‌باشد!",
+    "You don't have enough token for buying order": "موجودی حساب شما برای خرید کافی نمی‌باشد!",
     "Create Profile": "ایجاد پروفایل",
     "Profile": "حساب کاربری",
     "Wallet Address": "آدرس کیف پول",

@@ -33,5 +33,12 @@ export default {
         symbol: 'DAI',
         name: 'Dai Stablecoin',
         link: 'https://www.makerdao.com/',
+    },
+    btcb: {
+        address: '0x8a9424745056Eb399FD19a0EC26A14316684e274',
+        decimals: 18,
+        symbol: 'BTCB',
+        name: 'Binance BTC',
+        link: 'https://www.binance.com/',
     }
 };
