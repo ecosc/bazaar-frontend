@@ -1,13 +1,13 @@
 const network =  {
-    chainId: 97,
-    chainName: 'Binance Smart Chain Testnet',
+    chainId: 56,
+    chainName: 'Binance Smart Chain Mainnet',
     nativeCurrency: {
         name: 'BNB',
         symbol: 'bnb',
         decimals: 18,
     },
-    rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545'],
-    blockExplorerUrls: ['https://testnet.bscscan.com'],
+    rpcUrls: ['https://bsc-dataseed1.ninicoin.io'],
+    blockExplorerUrls: ['https://bscscan.com'],
 };
 
 
