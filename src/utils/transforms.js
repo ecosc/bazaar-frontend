@@ -1,12 +1,12 @@
 import { sourceAssets, sourceAssetsUnits } from "config/assets";
-import tokens from "constants/tokens";
+import tokens, { getTokenByAddress } from "constants/tokens";
 import i18n from "i18next";
 import { getLocale } from "localization";
 import { getBalanceAmountInFloat } from "./formatBalance";
 
 export const SOURCE_AMOUNT_DECIMALS = 10;
 
-export function transformWeight(amount, displayDecimals=5) {
+export function transformWeight(amount, displayDecimals = 5) {
     const amountInK = amount / 1000;
     const amountInKRem = amount % 1000;
     const { t } = i18n;
@@ -22,7 +22,7 @@ export function transformWeight(amount, displayDecimals=5) {
     return `${toLocaleNumber(Math.floor(amountInK), displayDecimals)} ${t('Kilo')} ${t('And')} ${Math.floor(amountInKRem)} ${t('Gram')}`;
 }
 
-export function transformUnit(sourceAsset, amount, displayDecimals=5) {
+export function transformUnit(sourceAsset, amount, displayDecimals = 5) {
     const { t } = i18n;
 
     const unit = sourceAssetsUnits[sourceAsset][0].symbol;
@@ -30,7 +30,7 @@ export function transformUnit(sourceAsset, amount, displayDecimals=5) {
     return `${toLocaleNumber(amount, displayDecimals)} ${t(unit)}`;
 }
 
-export function transformSourceAmount(sourceAsset, amount, displayDecimals=5) {
+export function transformSourceAmount(sourceAsset, amount, displayDecimals = 5) {
     const adjustedAmount = getBalanceAmountInFloat(amount, SOURCE_AMOUNT_DECIMALS, displayDecimals);
 
     switch (sourceAsset) {
@@ -46,14 +46,12 @@ export function transformSourceAmount(sourceAsset, amount, displayDecimals=5) {
 }
 
 export function transformTargetAmount(targetAssetAddress, amount, displayDecimals = 4) {
-    switch (targetAssetAddress) {
-        case tokens.busd.address:
-            return toLocaleNumber(getBalanceAmountInFloat(amount, tokens.busd.decimals, displayDecimals), displayDecimals) + ' ' + tokens.busd.symbol;
-        case tokens.ecu.address:
-            return toLocaleNumber(getBalanceAmountInFloat(amount, tokens.ecu.decimals, displayDecimals), displayDecimals) + ' ' + tokens.ecu.symbol;
-        default:
-            return "";
-    }
+    const token = getTokenByAddress(targetAssetAddress);
+    console.log(targetAssetAddress, token)
+
+    if (!token) return "";
+
+    return toLocaleNumber(getBalanceAmountInFloat(amount, token.decimals, displayDecimals), displayDecimals) + ' ' + token.symbol;
 }
 
 export function toLocaleNumber(num = 0, displayDecimals = 4) {
