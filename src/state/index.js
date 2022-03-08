@@ -2,6 +2,7 @@ import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import { save, load } from 'redux-localstorage-simple'
 import ProfileReducer, { initialState as profileInitialState } from './profile';
 import OrderReducer from './order';
+import GeneralReducer from './general';
 import cloneDeep from 'lodash/cloneDeep'
 
 const PERSISTED_KEYS = [];
@@ -11,6 +12,7 @@ export default configureStore({
     reducer: {
         profile: ProfileReducer,
         order: OrderReducer,
+        general: GeneralReducer,
     },
     // middleware: [...getDefaultMiddleware({ thunk: true }), save({ states: PERSISTED_KEYS })],
     middleware: [...getDefaultMiddleware({ thunk: true, serializableCheck: false })],

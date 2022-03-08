@@ -47,7 +47,6 @@ export function transformSourceAmount(sourceAsset, amount, displayDecimals = 5) 
 
 export function transformTargetAmount(targetAssetAddress, amount, displayDecimals = 4) {
     const token = getTokenByAddress(targetAssetAddress);
-    console.log(targetAssetAddress, token)
 
     if (!token) return "";
 

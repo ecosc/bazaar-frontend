@@ -22,6 +22,7 @@ import { Wallet } from 'components/Svg/Icons';
 import { useProfile } from "hooks/useProfile";
 import { accountEllipsis } from "utils/transforms";
 import logoURL from 'assets/images/logo.png';
+import { useConnectWallet } from "hooks/useConnectWallet";
 
 const StyledHeader = styled(Layout.Header)`
   display: flex;
@@ -120,25 +121,11 @@ const AccountEllipsis = styled.div`
 function AppHeader() {
     const { t, i18n } = useTranslation();
     const location = useLocation();
-    const { login, logout } = useAuth();
+    const { logout } = useAuth();
     const { account } = useWeb3React();
     const navigate = useNavigate();
     const { hasProfile, profile, isLoading: isProfileLoading } = useProfile();
-    const walletConfig = connectors[0];
-
-    const handleLogin = () => {
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
-        // Since iOS does not support Trust Wallet we fall back to WalletConnect
-        if (walletConfig.title === "Trust Wallet" && isIOS) {
-            login(connectorNames.WalletConnect);
-        } else {
-            login(walletConfig.connectorId);
-        }
-
-        localStorage.setItem(walletLocalStorageKey, walletConfig.title);
-        localStorage.setItem(connectorLocalStorageKey, walletConfig.connectorId);
-    }
+    const { openModal: openConnectWalletModal } = useConnectWallet();
 
     const languageSelectMenu = () => (
         <Menu>
@@ -226,7 +213,7 @@ function AppHeader() {
                             shape="round"
                             size="large"
                             type="primary"
-                            onClick={handleLogin}
+                            onClick={() => openConnectWalletModal()}
                         >
                             {t('Connect Wallet')}
                         </Button>

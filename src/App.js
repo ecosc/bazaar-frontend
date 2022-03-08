@@ -15,6 +15,7 @@ import EditProfile from 'pages/Profile/EditProfile';
 import CreateOrder from 'pages/Sales/CreateOrder';
 import Splash from 'components/Splash';
 import { useWeb3React } from '@web3-react/core';
+import { WalletConnectModal } from 'components/WalletConnectModal';
 
 function App() {
   useEagerConnect();
@@ -24,6 +25,7 @@ function App() {
 
   return (
     <Layout>
+      <WalletConnectModal />
       {isProfileLoading && account ? <Splash /> :
         <Routes>
           <Route path="/" element={<Bazaar />} />

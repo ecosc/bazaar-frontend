@@ -48,6 +48,10 @@ const GlobalStyle = createGlobalStyle`
     border-radius: 25px;
   }
 
+  .ant-modal-header {
+    border-radius: 25px 25px 0 0;
+  }
+
   .ant-modal-confirm-title {
     font-size: 1.2rem !important;
     padding-bottom: 15px;

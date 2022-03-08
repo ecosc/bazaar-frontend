@@ -1,3 +1,11 @@
 export {default as Wallet} from './Wallet';
 export {default as Telegram} from './Telegram';
 export {default as Twitter} from './Twitter';
+export {default as Metamask} from './Metamask';
+export {default as WalletConnect} from './WalletConnect';
+export {default as MathWallet} from './MathWallet';
+export {default as SafePal} from './SafePal';
+export {default as TrustWallet} from './TrustWallet';
+export {default as TokenPocket} from './TokenPocket';
+export {default as Coin98} from './Coin98';
+export {default as BinanceChain} from './BinanceChain';

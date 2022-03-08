@@ -47,7 +47,7 @@ const useAuth = () => {
                             }
                             message.error(t('Please authorize to access your account'));
                         } else {
-                            message.error(t(error.name), t(error.message));
+                            message.error(t(error.message));
                         }
                     }
                 })
