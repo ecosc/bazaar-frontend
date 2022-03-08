@@ -14,18 +14,20 @@ const WalletList = styled.div`
 `;
 
 const WalletItem = styled.div`
-    background: ${({ theme }) => theme.colors.inputBackground};
+    //background: ${({ theme }) => theme.colors.inputBackground};
     padding: 10px;
     border-radius: 25px;
     text-align: center;
     display: flex;
+    flex-direction: column;
     align-content: center;
     align-items: center;
     justify-content: center;
     cursor: pointer;
 
     &:hover {
-        background: ${({ theme }) => theme.colors.inputSecondary};
+        //background: ${({ theme }) => theme.colors.inputSecondary};
+        opacity: 0.7;
     }
 `;
 
@@ -66,13 +68,14 @@ export function WalletConnectModal() {
             closable
             title={t('Connect Wallet')}
             onCancel={handleCancelClick}
+            width={'350px'}
         >
             <WalletList>
                 {
                     connectors.map(connector => (
                         <WalletItem key={connector.title} onClick={handleConnectClick(connector)}>
-                            <span style={{ margin: '0 5px' }}>{connector.title}</span>
-                            {<connector.icon />}
+                            {<connector.icon width={'40px'} />}
+                            <span style={{ margin: '5px 0' }}>{connector.title}</span>
                         </WalletItem>
                     ))
                 }

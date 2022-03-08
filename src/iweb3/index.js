@@ -11,6 +11,7 @@ const POLLING_INTERVAL = 12000;
 const bscConnector = new BscConnector({ supportedChainIds: [chainId] });
 const injected = new InjectedConnector({ supportedChainIds: [chainId] });
 const walletconnect = new WalletConnectConnector({
+    supportedChainIds: [chainId],
     rpc: { [chainId]: rpcURL },
     qrcode: true,
     pollingInterval: POLLING_INTERVAL,
