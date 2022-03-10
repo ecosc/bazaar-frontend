@@ -1,4 +1,4 @@
-import { Layout, Menu, Avatar, Button, Dropdown } from "antd";
+import { Layout, Menu, Button, Dropdown } from "antd";
 import {
     GlobalOutlined,
     UserOutlined,
@@ -8,7 +8,8 @@ import {
     ShopOutlined,
     PlusOutlined,
     ShoppingCartOutlined,
-    ShoppingOutlined
+    ShoppingOutlined,
+    SwapOutlined
 } from '@ant-design/icons';
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
@@ -16,8 +17,6 @@ import { changeLanguage } from '../localization';
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import useAuth from "hooks/useAuth";
 import { useWeb3React } from "@web3-react/core";
-import { connectorNames } from "iweb3";
-import connectors, { connectorLocalStorageKey, walletLocalStorageKey } from "constants/connectors";
 import { Wallet } from 'components/Svg/Icons';
 import { useProfile } from "hooks/useProfile";
 import { accountEllipsis } from "utils/transforms";
@@ -190,10 +189,15 @@ function AppHeader() {
                 <Menu.Item
                     disabled={!account || !profile}
                     key="/purchases"
-                    icon={<ShoppingCartOutlined
-                    />}
+                    icon={<ShoppingCartOutlined />}
                 >
                     <Link to={'/purchases'}>{t('My Purchases')}</Link>
+                </Menu.Item>
+                <Menu.Item
+                    key="/swap"
+                    icon={<SwapOutlined />}
+                >
+                    <a target="_blank" href={'https://defa.finance/swap'}>{t('Swap')}</a>
                 </Menu.Item>
             </Menu>
             <HeaderOptions>
