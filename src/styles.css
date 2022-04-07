@@ -19,7 +19,7 @@
 }
 
 .ltr-input {
-  direction: ltr !important;
+  direction: auto !important;
 }
 
 .ant-layout-content {

@@ -1,6 +1,25 @@
 import { Button } from "antd";
+import Icon from '@ant-design/icons';
 import { useConnectWallet } from "hooks/useConnectWallet";
 import { useTranslation } from "react-i18next";
+import styled from "styled-components";
+import { ReactComponent as WalletSvg } from 'assets/images/wallet.svg';
+
+const StyledButton = styled(Button)`
+    height: 44px;
+    background: ${({ theme }) => theme.colors.connectWalletBackground};
+    border: none !important;
+    align-self: center;
+
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px !important;
+    line-height: 20px;
+
+    &:hover, &:focus {
+        background: ${({ theme }) => theme.colors.connectWalletBackgroundFocus};
+    } 
+`;
 
 
 function ConnectWalletButton() {
@@ -8,9 +27,9 @@ function ConnectWalletButton() {
     const { openModal } = useConnectWallet();
 
     return (
-        <Button style={{ alignSelf: 'center' }} onClick={openModal} size="large" type="primary" shape="round">
+        <StyledButton onClick={openModal} type="primary" shape="round" icon={<Icon component={WalletSvg} />}>
             {t('Connect Wallet')}
-        </Button>
+        </StyledButton>
     );
 }
 

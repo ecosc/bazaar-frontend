@@ -2,8 +2,9 @@ import { useWeb3React } from "@web3-react/core";
 import {
     ArrowLeftOutlined,
     ArrowRightOutlined,
+    UserOutlined
 } from '@ant-design/icons';
-import { Button, Card, Col, Form, Input, message } from "antd";
+import { Button, Card, Col, Divider, Form, Input, message } from "antd";
 import ConnectWalletButton from "components/ConnectWalletButton";
 import { useProfileContract } from "hooks/useContracts";
 import { useProfile } from "hooks/useProfile";
@@ -15,6 +16,7 @@ import { setProfile } from "state/profile";
 import styled from "styled-components";
 import CreateProfileButton from "components/CreateProfileButton";
 import { getDirection } from "localization";
+import SubmitButton from "components/SubmitButton";
 
 const ProfileWrapper = styled.div`
     width: 100%;
@@ -38,14 +40,11 @@ const ProfileCard = styled(Card)`
 const UpdateAccountForm = styled(Form)`
     display: flex;
     flex-direction: column;
-`;
 
-const SubmitButton = styled(Button)`
-    margin-top: 1rem;
-    align-self: center;
-    height: 56px !important;
+    & > div {
+        margin-bottom: 16px;
+    }
 `;
-
 
 function EditProfile() {
     const { t } = useTranslation();
@@ -104,7 +103,12 @@ function EditProfile() {
         <ProfileWrapper>
             <Col span={8} xl={10} lg={16} md={16} sm={24} xs={24}>
                 <ProfileCard
-                    title={t('Edit Profile')}
+                    title={
+                        <>
+                            <UserOutlined />
+                            <span>{t('Edit Profile')}</span>
+                        </>
+                    }
                     bordered={false}
                     loading={isProfileLoading}
                     extra={backButton()}
@@ -119,12 +123,13 @@ function EditProfile() {
                                 layout="vertical"
                                 requiredMark={false}
                             >
-                                <Form.Item name="name" label={t('Name')} rules={[{ required: true, message: t('name is required') }]}>
-                                    <Input className="ltr-input" />
+                                <Form.Item name="name" label={t('Name')} rules={[{ required: true }]}>
+                                    <Input placeholder={t('Enter your name')} />
                                 </Form.Item>
-                                <Form.Item name="contact" label={t('Contact Info')} rules={[{ required: true, message: t('contact info is required') }]}>
-                                    <Input className="ltr-input" />
+                                <Form.Item name="contact" label={t('Contact Info')} rules={[{ required: true }]}>
+                                    <Input placeholder={t('Enter your contact info')}/>
                                 </Form.Item>
+                                <Divider />
                                 <SubmitButton type="primary" shape="round" size="large" htmlType="submit" loading={isLoading} disabled={!isTouched}>
                                     {t('Update Account')}
                                 </SubmitButton>

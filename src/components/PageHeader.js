@@ -4,17 +4,20 @@ import styled from "styled-components";
 const Header = styled.div`
     width: 100%;
     padding: 40px 70px 20px 70px;
-    background: rgb(2,0,36);
-    background: rgb(131,58,180);
-    background: linear-gradient(0deg, rgb(229, 253, 255) 0%, rgb(243, 239, 255) 100%);
-    margin-bottom: 20px;
+    margin-bottom: 0px;
 `;
 
 const PageTitle = styled.h1`
-    font-size: 1.7rem;
-    font-weight: bold;
     padding-bottom: 10px;
-    color: ${({ theme }) => theme.colors.primary};
+    font-weight: 600;
+    font-size: 48px;
+    line-height: 110%;
+    letter-spacing: -0.04em;
+    background: ${({ theme }) => theme.colors.pageHeaderText};
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0px !important;
 `;
 
 const PageSubTitle = styled.h2`
@@ -27,7 +30,7 @@ function PageHeader({ title, subtitle }) {
     return (
         <Header>
             <PageTitle>{title}</PageTitle>
-            <PageSubTitle>{subtitle}</PageSubTitle>
+            {/* <PageSubTitle>{subtitle}</PageSubTitle> */}
         </Header>
     );
 }

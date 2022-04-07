@@ -1,4 +1,5 @@
-import { Layout, Menu, Button, Dropdown } from "antd";
+import { Layout, Menu, Dropdown } from "antd";
+import Icon from '@ant-design/icons';
 import {
     GlobalOutlined,
     UserOutlined,
@@ -6,7 +7,7 @@ import {
     CaretDownOutlined,
     LogoutOutlined,
     ShopOutlined,
-    PlusOutlined,
+    AppstoreAddOutlined,
     ShoppingCartOutlined,
     ShoppingOutlined,
     SwapOutlined
@@ -21,7 +22,7 @@ import { Wallet } from 'components/Svg/Icons';
 import { useProfile } from "hooks/useProfile";
 import { accountEllipsis } from "utils/transforms";
 import logoURL from 'assets/images/logo.png';
-import { useConnectWallet } from "hooks/useConnectWallet";
+import ConnectWalletButton from "components/ConnectWalletButton";
 
 const StyledHeader = styled(Layout.Header)`
   display: flex;
@@ -31,6 +32,14 @@ const StyledHeader = styled(Layout.Header)`
   zIndex: 1;
   position: fixed;
   color: ${({ theme }) => theme.colors.headerText};
+  height: 44px !important;
+  padding: 32px 48px;
+
+  & > ul {
+    background: ${({ theme }) => theme.colors.headerBackground} !important;
+    height: 44px !important;
+    align-items: center !important;
+  }
 
   & > ul > li > .ant-menu-title-content > a {
     color: ${({ theme }) => theme.colors.headerText};
@@ -38,12 +47,16 @@ const StyledHeader = styled(Layout.Header)`
 
   & > ul > li {
     color: ${({ theme }) => theme.colors.headerText};
+    height: 35px !important;
+    display: flex !important;
+    align-items: center !important;
+    border-radius: 40px !important;
   }
 `
 
 const Logo = styled.img`
   display: inline-block;
-  height: 63px;
+  height: auto;
   ${({ theme }) => theme.dir == 'rtl' && `
     margin-left: 25px;
   `}
@@ -59,11 +72,11 @@ const HeaderOptions = styled.div`
   flex-direction: row;
   align-items: center;
   ${({ theme }) => theme.dir == 'rtl' && `
-    left: 50px;
+    left: 48px;
   `}
 
   ${({ theme }) => theme.dir == 'ltr' && `
-    right: 50px;
+    right: 48px;
   `}
 `
 
@@ -71,6 +84,8 @@ const GlobIcon = styled(GlobalOutlined)`
   font-size: 1.2rem;
   margin: 1rem;
   cursor: pointer;
+  outline: 7px solid ${({ theme }) => theme.colors.headerIconOutline};
+  border-radius: 50%;
 `
 
 const LanguageMenuItem = styled(Menu.Item)`
@@ -99,7 +114,7 @@ const WalletIcon = styled(Wallet)`
 
 const WalletIconWrapper = styled.div`
     align-items: center;
-    background-color: ${({ theme }) => theme.colors.primary};
+    background: ${({ theme }) => theme.colors.connectWalletBackground};
     border-radius: 16px;
     box-shadow: rgb(0 0 0 / 10%) 0px -2px 0px inset;
     cursor: pointer;
@@ -124,7 +139,6 @@ function AppHeader() {
     const { account } = useWeb3React();
     const navigate = useNavigate();
     const { hasProfile, profile, isLoading: isProfileLoading } = useProfile();
-    const { openModal: openConnectWalletModal } = useConnectWallet();
 
     const languageSelectMenu = () => (
         <Menu>
@@ -171,28 +185,33 @@ function AppHeader() {
         <StyledHeader>
             <Logo src={logoURL} />
             <Menu mode="horizontal" selectedKeys={[location.pathname]} style={{ width: '100%' }}>
-                <Menu.Item key="/" icon={<ShopOutlined />}><Link to={'/'}>{t('Bazaar')}</Link></Menu.Item>
+                <Menu.Item key="/" icon={<ShopOutlined />}><Link to={'/'}>{t('Market')}</Link></Menu.Item>
                 <Menu.Item
                     // disabled={!account || !profile}
                     key="/sales/new"
-                    icon={<PlusOutlined />}
+                    icon={<AppstoreAddOutlined />}
                 >
-                    <Link to={'/sales/new'}>{t('Create Order')}</Link>
+                    <Link to={'/sales/new'}>{t('New Order')}</Link>
                 </Menu.Item>
-                <Menu.Item
-                    disabled={!account || !profile}
-                    key="/sales"
-                    icon={<ShoppingOutlined />}
-                >
-                    <Link to={'/sales'}>{t('My Sales')}</Link>
-                </Menu.Item>
-                <Menu.Item
-                    disabled={!account || !profile}
-                    key="/purchases"
-                    icon={<ShoppingCartOutlined />}
-                >
-                    <Link to={'/purchases'}>{t('My Purchases')}</Link>
-                </Menu.Item>
+                {
+                    account &&
+                    <Menu.Item
+                        key="/sales"
+                        icon={<ShoppingOutlined />}
+                    >
+                        <Link to={'/sales'}>{t('My Sales')}</Link>
+                    </Menu.Item>
+
+                }
+                {
+                    account &&
+                    <Menu.Item
+                        key="/purchases"
+                        icon={<ShoppingCartOutlined />}
+                    >
+                        <Link to={'/purchases'}>{t('My Purchases')}</Link>
+                    </Menu.Item>
+                }
                 <Menu.Item
                     key="/swap"
                     icon={<SwapOutlined />}
@@ -213,14 +232,7 @@ function AppHeader() {
                                 <WalletIcon color="secondary" />
                             </WalletIconWrapper>
                         </Dropdown>
-                        : <Button
-                            shape="round"
-                            size="large"
-                            type="primary"
-                            onClick={() => openConnectWalletModal()}
-                        >
-                            {t('Connect Wallet')}
-                        </Button>
+                        : <ConnectWalletButton />
                 }
 
             </HeaderOptions>

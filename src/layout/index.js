@@ -27,11 +27,11 @@ function AppLayout({ children }) {
             <Content className="site-layout" style={{ padding: '0 50px', marginTop: 64, minHeight: 'calc(100vh - 138px)' }}>
                 {children}
             </Content>
-            <StyledFooter style={{ textAlign: 'center', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+            {/* <StyledFooter style={{ textAlign: 'center', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                 <a target="_blank" href="https://t.me/ECOSCu"><Telegram /></a>
                 <a target="_blank" href="https://twitter.com/IoEcosc"><Twitter /></a>
                 <a target="_blank" href="mailto:info@ecosc.net"><MailFilled style={{ fontSize: '22px' }} /></a>
-            </StyledFooter>
+            </StyledFooter> */}
         </Layout>
     );
 }

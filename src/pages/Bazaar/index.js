@@ -10,6 +10,9 @@ import { orderStates } from "utils/order";
 import List from "./components/List";
 import PageHeader from "components/PageHeader";
 import { bazaars, sourceAssetNames } from "config/assets";
+import HeadImg1 from 'assets/images/bazaar-1.png'
+import HeadImg2 from 'assets/images/bazaar-2.png'
+import HeadImg3 from 'assets/images/bazaar-3.png'
 
 const { Option } = Select;
 const { Text } = Typography;
@@ -22,7 +25,9 @@ const Wrapper = styled.div`
 
 const Actions = styled(Row)`
     width: 100%;
-    padding: 24px;
+    padding: 16px;
+
+    background: ${({ theme }) => theme.colors.pageActionsBackground};;
 
     & > .ant-col {
         display: flex;
@@ -33,6 +38,33 @@ const Actions = styled(Row)`
     & > .ant-col > * {
         padding: 0 10px;
     }
+`;
+
+const StyledSelect = styled(Select)`
+    & > .ant-select-selector {
+        height: 40px !important;
+        line-height: 40px !important;
+        padding: 0 12px !important;
+        background: ${({ theme }) => theme.colors.cardBackground} !important;
+    }
+
+    & > .ant-select-selector > .ant-select-selection-overflow > .ant-select-selection-overflow-item > .ant-select-selection-item, & > .ant-select-selector > .ant-select-selection-item {
+        height: 24px !important;
+        font-weight: 500;
+        line-height: 20px !important;
+        padding: 1px 3px !important;
+    }
+
+    & > .ant-select-selector > .ant-select-selection-item {
+        height: 40px !important;
+        line-height: 40px !important;
+    }
+
+    // & > .ant-select-selector{
+    //     height: 40px !important;
+    //     line-height: 40px !important;
+    //     padding: 0 12px !important;
+    // }
 `;
 
 const defaultFilters = {
@@ -94,12 +126,13 @@ function Bazaar() {
 
     return (
         <Wrapper>
-            <PageHeader title={t('Online Transactions')} subtitle={t('Transactions that are live and you can buy with tiny fee')} />
+            <img src={HeadImg1} style={{width: '100%'}}/>
+            <PageHeader title={t('Market')} subtitle={t('Transactions that are live and you can buy with tiny fee')} />
             <Actions align="center" gutter={10}>
                 <Col xl={16} lg={22} md={22} sm={24} xs={24}>
                     <div>
-                        <Text type="secondary">{t('Bazaar')}: </Text>
-                        <Select
+                        <Text type="secondary">{t('Merket')}: </Text>
+                        <StyledSelect
                             style={{ minWidth: '100px' }}
                             showSearch={false}
                             defaultValue={bazaars.GOLD.id}
@@ -110,11 +143,11 @@ function Bazaar() {
                                     <Option key={b.id} value={b.id}>{b.icon} {t(b.symbol)}</Option>
                                 ))
                             }
-                        </Select>
+                        </StyledSelect>
                     </div>
                     <div>
                         <Text type="secondary">{t('Assets')}: </Text>
-                        <Select
+                        <StyledSelect
                             style={{ width: '300px' }}
                             mode="multiple"
                             showSearch={false}
@@ -128,7 +161,7 @@ function Bazaar() {
                                     <Option key={asset} value={asset}>{t(sourceAssetNames[asset])}</Option>
                                 ))
                             }
-                        </Select>
+                        </StyledSelect>
                     </div>
                     <div>
                         <Text type="secondary">{t('Auto Refresh')}: </Text>

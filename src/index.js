@@ -19,8 +19,8 @@ import { RefreshContextProvider } from 'contexts/RefreshContext'
 
 ConfigProvider.config({
   theme: {
-    primaryColor: '#833ab4',
-    // errorColor: 'red',
+    primaryColor: '#7747FF',
+    errorColor: 'rgba(198, 59, 59, 1)',
     // infoColor: 'magenta',
     // processingColor: 'orange',
     // successColor: 'green',
@@ -31,16 +31,29 @@ ConfigProvider.config({
 const lightTheme = {
   dir: getDirection(),
   colors: {
-    headerBackground: 'white',
-    background: 'rgb(250, 249, 250)',
-    primary: '#833ab4',
-    secondary: '#1fc7d4',
-    text: 'rgba(0,0,0,.85)',
-    inputBackground: 'rgb(238, 234, 244)',
-    inputSecondary: '#d7c4e2',
+    headerBackground: '#0B0322',
+    headerIconColor: '#A484FF',
+    headerColorSelected: '#CAE9FF',
+    headerIconOutline: '#cae9ff1a',
+    background: '#0B0322',
+    cardBackground: '#F9F9F9',
+    primary: '#6E2AFF',
+    primary1: '#7747FF',
+    secondary: 'rgb(202, 233, 255)',
+    text: '#FFFFFF',
+    textSecondary: '#B3ACC8',
+    pageHeaderText: 'linear-gradient(150deg, #FFFFFF 0%, #7FC8FB 10%)',
+    pageActionsBackground: '#231D35',
+    inputBackground: '0xFFFFFF',
+    inputText: '#5B5666',
+    inputTitle: '#737277',
+    inputError: 'rgba(198, 59, 59, 1)',
+    inputSecondary: '#CAE9FF',
     border: 'rgb(231, 227, 235)',
-    headerText: 'rgb(122, 110, 170)',
-    maskBackground: 'rgba(40, 13, 95, 0.6)'
+    headerText: '#CAE9FF',
+    maskBackground: 'rgba(11, 3, 34, 0.8)',
+    connectWalletBackground: 'linear-gradient(271.6deg, #6640FF 1.39%, #987EFF 100%), linear-gradient(104.4deg, #FFFFFF -18.69%, #7FC8FB 41.02%)',
+    connectWalletBackgroundFocus: 'linear-gradient(330deg,#6640FF 1.39%,#987EFF 100%),linear-gradient(104.4deg,#FFFFFF -18.69%,#7FC8FB 41.02%)',
   }
 };
 

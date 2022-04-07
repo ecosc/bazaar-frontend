@@ -1,5 +1,6 @@
 import { useWeb3React } from "@web3-react/core";
 import { Button, Card, Col, Form, Input, message, Typography, Modal, Space, Alert } from "antd";
+import { UserOutlined } from '@ant-design/icons';
 import ConnectWalletButton from "components/ConnectWalletButton";
 import { useProfileContract } from "hooks/useContracts";
 import { useProfile } from "hooks/useProfile";
@@ -15,6 +16,7 @@ import useTokenBalance from "hooks/useTokenBalance";
 import { transformTargetAmount } from "utils/transforms";
 import { APPROVE_STATES, useApproveToken } from "hooks/useApproveToken";
 import { PROFILE_ADDRESS } from "constants/addresses";
+import SubmitButton from "components/SubmitButton";
 
 const { Text } = Typography;
 const { confirm } = Modal;
@@ -41,12 +43,6 @@ const ProfileCard = styled(Card)`
 const CreateAccountForm = styled(Form)`
     display: flex;
     flex-direction: column;
-`;
-
-const SubmitButton = styled(Button)`
-    margin-top: 1rem;
-    align-self: center;
-    height: 56px !important;
 `;
 
 
@@ -118,7 +114,15 @@ function CreateProfile() {
     return (
         <ProfileWrapper>
             <Col span={8} xl={10} lg={16} md={16} sm={24} xs={24}>
-                <ProfileCard title={t('Create Profile')} bordered={false}>
+                <ProfileCard
+                    title={
+                        <>
+                            <UserOutlined />
+                            <span>{t('Create Profile')}</span>
+                        </>
+                    }
+                    bordered={false}
+                >
                     {
                         !account ? <ConnectWalletButton /> : (
                             <CreateAccountForm
@@ -128,11 +132,11 @@ function CreateProfile() {
                                 layout="vertical"
                                 requiredMark={false}
                             >
-                                <Form.Item name="name" label={t('Name')} rules={[{ required: true, message: t('name is required') }]}>
-                                    <Input className="ltr-input" />
+                                <Form.Item name="name" label={t('Name')} rules={[{ required: true }]}>
+                                    <Input placeholder={t('Enter your name')} />
                                 </Form.Item>
-                                <Form.Item name="contact" label={t('Contact Info')} rules={[{ required: true, message: t('contact info is required') }]}>
-                                    <Input className="ltr-input" />
+                                <Form.Item name="contact" label={t('Contact Info')} rules={[{ required: true }]}>
+                                    <Input placeholder={t('Enter your contact info')}/>
                                 </Form.Item>
                                 <SubmitButton
                                     type="primary"
@@ -148,7 +152,7 @@ function CreateProfile() {
                     }
                 </ProfileCard>
             </Col>
-        </ProfileWrapper>
+        </ProfileWrapper >
     );
 }
 

@@ -1,6 +1,13 @@
 import { useWeb3React } from "@web3-react/core";
-import { Button, Card, Col, Form, Input, message, Select, Space, Typography, Modal, Alert } from "antd";
-import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { Button, Card, Col, Row, Form, Input, message, Select, Space, Typography, Modal, Alert, Divider } from "antd";
+import {
+    ExclamationCircleOutlined,
+    AppstoreOutlined,
+    AppstoreAddOutlined,
+    CrownOutlined,
+    FlagOutlined,
+    FieldTimeOutlined,
+} from '@ant-design/icons';
 import ConnectWalletButton from "components/ConnectWalletButton";
 import { useProfile } from "hooks/useProfile";
 import { useTranslation } from "react-i18next";
@@ -19,6 +26,7 @@ import { useState } from "react";
 import { bazaars, sourceAssetNames, sourceAssets, sourceAssetsUnits, units } from "config/assets";
 import { BIG_ZERO } from "utils/bigNumber";
 import { getTokenBalance } from "hooks/useTokenBalance";
+import SubmitButton from "components/SubmitButton";
 
 const { Option, OptGroup } = Select;
 const { confirm } = Modal;
@@ -48,10 +56,20 @@ const CreateOrderForm = styled(Form)`
     flex-direction: column;
 `;
 
-const SubmitButton = styled(Button)`
-    margin-top: 1rem;
-    align-self: center;
-    height: 56px !important;
+const GroupSelectInput = styled(Form.Item)`
+    & > .ant-form-item-control > .ant-form-item-control-input > .ant-form-item-control-input-content {
+        display: flex !important;
+        align-items: center !important;
+    }
+`;
+
+const UnitSelectLabel = styled.span`
+    color: ${({ theme }) => theme.colors.inputTitle} !important;
+
+    &:after{
+        content: ": ";
+        white-space: pre;
+    }
 `;
 
 const InlinedFormItem = styled(Form.Item)`
@@ -75,7 +93,7 @@ const InlinedFormItem = styled(Form.Item)`
 `
 
 const TokenIcon = styled.img`
-    width: 24px;
+    width: 22px;
     ${({ theme }) => theme.dir == 'rtl' && `
         margin-left: 10px;
     `}
@@ -106,6 +124,7 @@ function CreateOrder() {
     const bazaarContract = useBazaarContract();
     const { state: approveState, approve } = useApproveToken(handleOnApproved);
     const [sourceAsset, setSourceAsset] = useState(initialValues.sourceAsset);
+    
 
     const getFormValues = () => {
         const values = form.getFieldsValue();
@@ -279,8 +298,16 @@ function CreateOrder() {
 
     return (
         <OrderWrapper>
-            <Col xl={10} lg={14} md={14} sm={22} xs={22}>
-                <OrderCard title={t('Create Order')} bordered={false}>
+            <Col xl={14} lg={16} md={20} sm={22} xs={22} style={{ maxWidth: '768px' }}>
+                <OrderCard
+                    title={
+                        <>
+                            <AppstoreAddOutlined />
+                            <span>{t('New Order')}</span>
+                        </>
+                    }
+                    bordered={false}
+                >
                     {
                         !account ? <ConnectWalletButton /> : !hasProfile ? <CreateProfileButton /> : (
                             <CreateOrderForm
@@ -291,48 +318,119 @@ function CreateOrder() {
                                 layout="vertical"
                                 requiredMark={false}
                             >
-                                <Form.Item name="sourceAsset" label={t('Source Asset')} rules={[{ required: true }]}>
+                                <Form.Item
+                                    name="sourceAsset"
+                                    label={
+                                        <>
+                                            <AppstoreOutlined />
+                                            <span>{t('Source Asset')}</span>
+                                        </>
+                                    }
+                                    rules={[{ required: true }]}
+                                >
                                     <Select onChange={handleSourceAssetChange}>
                                         {renderSourceAssets()}
                                     </Select>
                                 </Form.Item>
-                                <Form.Item style={{ marginBottom: 0 }}>
-                                    <InlinedFormItem style={{ margin: '0' }} name="sourceAmount" label={t('Source Amount')} rules={[{ required: true }]}>
-                                        <Input type={'number'} className="ltr-input" />
-                                    </InlinedFormItem>
-                                    <InlinedFormItem name="sourceAmountUnit" label={t('Unit')} rules={[{ required: true }]}>
-                                        <Select>
-                                            {renderSourceAmountUnit()}
-                                        </Select>
-                                    </InlinedFormItem>
-                                </Form.Item>
-                                <Form.Item style={{ marginBottom: 0 }}>
-                                    <InlinedFormItem name="targetAmount" label={t('Your Price')} rules={[{ required: true }]}>
-                                        <Input type={'number'} className="ltr-input" />
-                                    </InlinedFormItem>
-                                    <InlinedFormItem name="targetAsset" label={t('Target Asset')} rules={[{ required: true }]}>
-                                        <Select optionLabelProp="label">
-                                            {
-                                                Object.entries(tokens).map(([id, token]) => {
-                                                    return renderTokenOption(id, token);
-                                                })
+                                <Row style={{ marginBottom: 0 }} gutter={16}>
+                                    <Col span={12}>
+                                        <GroupSelectInput
+                                            style={{ marginBottom: 0 }}
+                                            label={
+                                                <>
+                                                    <CrownOutlined />
+                                                    <span>{t('Source Amount')}</span>
+                                                </>
                                             }
-                                        </Select>
-                                    </InlinedFormItem>
-                                </Form.Item>
-                                <Form.Item style={{ marginBottom: 0 }}>
-                                    <InlinedFormItem name="timeout" label={t('Valid For')} rules={[{ required: true }]}>
-                                        <Input type={'number'} className="ltr-input" />
-                                    </InlinedFormItem>
-                                    <InlinedFormItem name="timeoutValueUnit" label={t('Unit')} rules={[{ required: true }]}>
-                                        <Select>
-                                            <Option value='minutes' >{t('Minutes')}</Option>
-                                            <Option value='hours'>{t('Hours')}</Option>
-                                            <Option value='days'>{t('Days')}</Option>
-                                        </Select>
-                                    </InlinedFormItem>
-                                </Form.Item>
-                                <SubmitButton type="primary" shape="round" size="large" htmlType="submit" loading={approveState == APPROVE_STATES.APPROVING || loadingBalance}>
+                                        >
+                                            <InlinedFormItem
+                                                style={{ margin: '0' }}
+                                                name="sourceAmount"
+                                                noStyle
+                                                rules={[{ required: true, message: t('Amount is required') }]}
+                                            >
+                                                <Input type={'number'} className="ltr-input" placeholder={t('Enter amount')} />
+                                            </InlinedFormItem>
+                                            <Divider type="vertical" />
+                                            <UnitSelectLabel>{t('Unit')}</UnitSelectLabel>
+                                            <InlinedFormItem noStyle name="sourceAmountUnit" rules={[{ required: true }]}>
+                                                <Select dropdownMatchSelectWidth={false}>
+                                                    {renderSourceAmountUnit()}
+                                                </Select>
+                                            </InlinedFormItem>
+                                        </GroupSelectInput>
+                                    </Col>
+                                    <Col span={12}>
+                                        <GroupSelectInput
+                                            style={{ marginBottom: 0 }}
+                                            label={
+                                                <>
+                                                    <FlagOutlined />
+                                                    <span>{t('Your Price')}</span>
+                                                </>
+                                            }
+                                        >
+                                            <InlinedFormItem
+                                                name="targetAmount"
+                                                rules={[{ required: true, message: t('Price is required') }]}
+                                                noStyle
+                                            >
+                                                <Input type={'number'} className="ltr-input" placeholder={t('Enter your price')} />
+                                            </InlinedFormItem>
+                                            <Divider type="vertical" />
+                                            <InlinedFormItem
+                                                name="targetAsset"
+                                                noStyle
+                                            >
+                                                <Select optionLabelProp="label" dropdownMatchSelectWidth={false}>
+                                                    {
+                                                        Object.entries(tokens).map(([id, token]) => {
+                                                            return renderTokenOption(id, token);
+                                                        })
+                                                    }
+                                                </Select>
+                                            </InlinedFormItem>
+                                        </GroupSelectInput>
+                                    </Col>
+                                </Row>
+                                <Row gutter={16}>
+                                    <Col span={12}>
+                                        <GroupSelectInput
+                                            style={{ marginBottom: 0 }}
+                                            label={
+                                                <>
+                                                    <FieldTimeOutlined />
+                                                    <span>{t('Lifetime')}</span>
+                                                </>
+                                            }
+                                        >
+                                            <InlinedFormItem
+                                                noStyle
+                                                name="timeout"
+                                                rules={[{ required: true, message: t('Lifetime is required') }]}
+                                            >
+                                                <Input type={'number'} className="ltr-input" placeholder={t('Enter lifetime')} />
+                                            </InlinedFormItem>
+                                            <Divider type="vertical" />
+                                            <UnitSelectLabel>{t('Unit')}</UnitSelectLabel>
+                                            <InlinedFormItem noStyle name="timeoutValueUnit">
+                                                <Select dropdownMatchSelectWidth={false}>
+                                                    <Option value='minutes' >{t('Minutes')}</Option>
+                                                    <Option value='hours'>{t('Hours')}</Option>
+                                                    <Option value='days'>{t('Days')}</Option>
+                                                </Select>
+                                            </InlinedFormItem>
+                                        </GroupSelectInput>
+                                    </Col>
+                                </Row>
+                                <Divider />
+                                <SubmitButton
+                                    type="primary"
+                                    shape="round"
+                                    size="large"
+                                    htmlType="submit"
+                                    loading={approveState == APPROVE_STATES.APPROVING || loadingBalance}
+                                >
                                     {t('Place Order')}
                                 </SubmitButton>
                             </CreateOrderForm>

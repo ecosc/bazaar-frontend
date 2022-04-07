@@ -1,5 +1,5 @@
 import { useWeb3React } from "@web3-react/core";
-import {EditOutlined} from '@ant-design/icons';
+import { EditOutlined, UserOutlined } from '@ant-design/icons';
 import { Card, Col, Typography, Space } from "antd";
 import CreateProfileButton from "components/CreateProfileButton";
 import { useProfile } from "hooks/useProfile";
@@ -31,12 +31,17 @@ function Profile() {
         <ProfileWrapper>
             <Col span={8} xl={10} lg={16} md={16} sm={24} xs={24}>
                 <ProfileCard
-                title={t('Profile')}
-                bordered={false}
-                loading={isLoading}
-                actions={[
-                    <EditOutlined key="edit" onClick={() => navigate('/profile/edit')} />
-                ]}
+                    title={
+                        <>
+                            <UserOutlined />
+                            <span>{t('Profile')}</span>
+                        </>
+                    }
+                    bordered={false}
+                    loading={isLoading}
+                    actions={[
+                        <EditOutlined key="edit" onClick={() => navigate('/profile/edit')} />
+                    ]}
                 >
                     {
                         (!hasProfile || !account) ? <CreateProfileButton /> :
