@@ -243,3 +243,17 @@ export function getUnitByID(id = 'KILOGRAM') {
 export function getBazaarByID(id = 'GOLD') {
     return bazaars[id];
 }
+
+export function getBazaarForAsset(assetID) {
+    const foundBazaar = Object.entries(bazaars).find(([id, bazaar]) => {
+        if (bazaar.assets.find(asset => asset == assetID)) {
+            return true;
+        }
+
+        return false;
+    });
+
+    if (!foundBazaar) return null;
+
+    return foundBazaar[1];
+}

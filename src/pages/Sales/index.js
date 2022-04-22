@@ -1,6 +1,9 @@
 import { useWeb3React } from "@web3-react/core";
-import { ReloadOutlined } from '@ant-design/icons'
-import { Col, Row, Select, Switch, Typography, Button } from "antd";
+import {
+    ReloadOutlined,
+    AppstoreOutlined
+} from '@ant-design/icons'
+import {  Select, Typography } from "antd";
 import { useFetchOrders, useOrders } from "hooks/useOrder";
 import { useProfile } from "hooks/useProfile";
 import { useEffect, useState } from "react";
@@ -26,18 +29,69 @@ const Wrapper = styled.div`
     align-items: center;
 `;
 
-const Actions = styled(Row)`
-    width: 100%;
-    padding: 24px;
+const ActionItemLabel = styled(Text)`
+    ${({ theme }) => theme.dir == 'rtl' && `
+        margin-left: 16px;
+    `}
 
-    & > .ant-col {
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    ${({ theme }) => theme.dir == 'ltr' && `
+        margin-right: 16px;
+    `}
+`;
+
+const Actions = styled.div`
+    position: relative;
+    width: 100%;
+    padding: 16px 118px;
+    background: ${({ theme }) => theme.colors.pageActionsBackground};
+
+    @media (max-width: 1200px) {
+        padding: 16px 60px;
+    }
+`;
+
+const ActionsInner = styled.div`
+    width: 100%;
+    max-width: 1300px;
+    margin: auto;
+`;
+
+const ActionItem = styled.div`
+    display: inline-block;
+    ${({ theme }) => theme.dir == 'rtl' && `
+        margin-left: 25px;
+    `}
+
+    ${({ theme }) => theme.dir == 'ltr' && `
+        margin-right: 25px;
+    `}
+`;
+
+const StyledSelect = styled(Select)`
+    & > .ant-select-selector {
+        height: 40px !important;
+        line-height: 40px !important;
+        padding: 0 12px !important;
+        background: ${({ theme }) => theme.colors.cardBackground} !important;
     }
 
-    & > .ant-col > * {
-        padding: 0 10px;
+    & > .ant-select-selector > .ant-select-selection-overflow > .ant-select-selection-overflow-item > .ant-select-selection-item, & > .ant-select-selector > .ant-select-selection-item {
+        height: 24px !important;
+        font-weight: 500;
+        line-height: 20px !important;
+        padding: 1px 3px !important;
+    }
+
+    & > .ant-select-selector > .ant-select-selection-item {
+        height: 40px !important;
+        line-height: 40px !important;
+        ${({ theme }) => theme.dir == 'rtl' && `
+            margin-left: 15px;
+        `}
+
+        ${({ theme }) => theme.dir == 'ltr' && `
+            margin-right: 15px;
+        `}
     }
 `;
 
@@ -53,7 +107,7 @@ function Bazaar() {
     const { orders, isLoading: isOrdersLoading, isLoadingMore, hasMore } = useOrders();
     const navigate = useNavigate();
     const [filters, setFilters] = useState({ states: defaultFilters, seller: account });
-    const { refresh, setAutoRefresh, autoRefresh, loadMore } = useFetchOrders(false, filters);
+    const { refresh, setAutoRefresh, autoRefresh, loadMore, setItems: setOrders } = useFetchOrders(false, filters);
     useNotifyOnOrderPlaced(onEventFired);
     useNotifyOnOrderClosed(onEventFired);
     useNotifyOnOrderCancelledBySeller(onEventFired);
@@ -62,6 +116,12 @@ function Bazaar() {
     function onEventFired() {
         refresh();
     }
+
+    useEffect(() => {
+        return () => {
+            setOrders([]);
+        }
+    }, [])
 
     useEffect(() => {
         if (!isProfileLoading && !profile) {
@@ -78,48 +138,49 @@ function Bazaar() {
     return (
         <Wrapper>
             <PageHeader title={t('My Sale Orders')} subtitle={t('Your active and history sale orders')} />
-            <Actions align="center" gutter={10}>
-                <Col xl={16} lg={22} md={22} sm={24} xs={24}>
-                    <div>
-                        <Text type="secondary">{t('State')}: </Text>
-                        <Select
+            <Actions>
+                <ActionsInner>
+                    <ActionItem>
+                        <ActionItemLabel type="secondary"><AppstoreOutlined style={{ margin: '2px' }} />{t('State')} </ActionItemLabel>
+                        <StyledSelect
                             style={{ width: '300px' }}
                             mode="multiple"
                             showSearch={false}
                             defaultValue={defaultFilters}
                             onChange={onFiltersChange}
                             maxTagCount='responsive'
+                            dropdownMatchSelectWidth={false}
                         >
                             {
                                 Object.entries(orderStates).map(([stateName, value]) => (
                                     <Option key={value} value={value}>{orderStateInString(value)}</Option>
                                 ))
                             }
-                        </Select>
-                    </div>
-                    <div>
+                        </StyledSelect>
+                    </ActionItem>
+                    {/* <div>
                         <Text type="secondary">{t('Auto Refresh')}: </Text>
                         <Switch onChange={(v) => setAutoRefresh(v)} checked={autoRefresh} />
-                    </div>
-                    <Button
+                    </div> */}
+                    {/* <Button
                         icon={<ReloadOutlined />}
                         loading={isOrdersLoading}
                         onClick={() => refresh()}
                         shape="circle"
                         type="primary"
                         size="middle"
-                    />
-                </Col>
+                    /> */}
+                </ActionsInner>
             </Actions>
             <List
-                isLoading={isProfileLoading || isOrdersLoading}
+                isLoading={(account && isProfileLoading) || isOrdersLoading}
                 isLoadingMore={isLoadingMore}
                 items={orders}
                 refresh={refresh}
                 loadMore={loadMore}
                 hasMore={hasMore}
             />
-        </Wrapper>
+        </Wrapper >
     );
 }
 

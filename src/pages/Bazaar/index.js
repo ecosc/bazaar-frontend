@@ -139,9 +139,15 @@ function Bazaar() {
     const { t } = useTranslation();
     const { orders, isLoading: isOrdersLoading, isLoadingMore, hasMore } = useOrders();
     const [filters, setFilters] = useState(defaultFilters);
-    const { refresh, setAutoRefresh, autoRefresh, loadMore } = useFetchOrders(true, filters);
+    const { refresh, setAutoRefresh, autoRefresh, loadMore, setItems: setOrders } = useFetchOrders(true, filters);
     const [currentBazaar, setCurrentBazaar] = useState(bazaars.GOLD.id);
     const assets = bazaars[currentBazaar].assets;
+
+    useEffect(() => {
+        return () => {
+            setOrders([]);
+        }
+    }, [])
 
     useEffect(() => {
         refresh();

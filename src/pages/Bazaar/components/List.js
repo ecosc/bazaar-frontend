@@ -6,8 +6,7 @@ import {
     Space,
     message,
     Button,
-    Alert,
-    Table
+    Alert
 } from "antd";
 import styled from "styled-components";
 import BuyButton from "components/BuyButton";
@@ -25,6 +24,7 @@ import { getBazaarByID, sourceAssetNames } from 'config/assets';
 import ProfileInfoButton from 'components/ProfileInfoButton';
 import { useWeb3React } from '@web3-react/core';
 import { BIG_ZERO } from 'utils/bigNumber';
+import BazaarTable from 'components/BazaarTable';
 
 const { Text } = Typography;
 const { confirm } = Modal;
@@ -44,44 +44,6 @@ const BazaarTableOuter = styled.div`
     max-width: 1300px;
     margin: auto;
     text-align: center;
-`;
-
-const BazaarTable = styled(Table)`
-    border-radius: 30px !important;
-    overflow: hidden;
-    background: ${({ theme }) => theme.colors.cardBackground} !important;
-
-    & > .ant-spin-nested-loading {
-        padding: 25px 24px !important;
-    }
-
-    & > .ant-spin-nested-loading > .ant-spin-container {
-        position: unset !important;
-    }
-
-    & > .ant-spin-nested-loading > .ant-spin-container > .ant-table > .ant-table-container > .ant-table-content > table > thead > tr > th {
-        background: ${({ theme }) => theme.colors.cardBackground} !important;
-        border: unset !important;
-        font-weight: 600;
-        padding-bottom: 20px !important;
-    }
-
-    & > .ant-spin-nested-loading > .ant-spin-container > .ant-table > .ant-table-container > .ant-table-content > table > thead > tr > th:last-child {
-        text-align: center;
-    }
-
-    & > .ant-spin-nested-loading > .ant-spin-container > .ant-table > .ant-table-container > .ant-table-content > table > thead > tr > th:before {
-        display: none !important;
-    }
-
-    & > .ant-spin-nested-loading > .ant-spin-container > .ant-table > .ant-table-container > .ant-table-content > table > tbody > tr {
-        background: ${({ theme }) => theme.colors.cardBackground} !important;
-        color: #8D8B95 !important;
-    }
-
-    & > .ant-spin-nested-loading > .ant-spin-container > .ant-table > .ant-table-container > .ant-table-content > table > tbody > tr > td:last-child {
-        text-align: center;
-    }
 `;
 
 const BoldColumn = styled.span`
@@ -114,7 +76,6 @@ const TargetAssetIcon = styled.img`
     width: 25px;
     inset: auto 0px 0px auto;
     z-index: 6;
-}
 `;
 
 function List({ isLoading, items, refresh, loadMore, isLoadingMore, hasMore, currentBazaar }) {
@@ -185,7 +146,7 @@ function List({ isLoading, items, refresh, loadMore, isLoadingMore, hasMore, cur
             title: t('Status'),
             dataIndex: 'state',
             key: 'state',
-            width: '12%',
+            width: '10%',
             ellipsis: true,
             render: (v, item) => orderStateInString(item.state)
         },
@@ -193,7 +154,7 @@ function List({ isLoading, items, refresh, loadMore, isLoadingMore, hasMore, cur
             title: t('Remaining Time'),
             dataIndex: 'state',
             key: 'state',
-            width: '10%',
+            width: '12%',
             ellipsis: true,
             render: (v, item) => {
                 const now = Date.now();

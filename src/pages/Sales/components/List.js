@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
-import { DownOutlined } from '@ant-design/icons';
-import { Col, Collapse, Row, Skeleton, Typography, Modal, Space, message, Button, Empty } from "antd";
+import { DownOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { Typography, Modal, Space, message, Button } from "antd";
 import styled from "styled-components";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -12,52 +12,197 @@ import { orderStates, orderStateInString, maxDeliveryTime } from 'utils/order';
 import { AddressZero } from '@ethersproject/constants'
 import ProfileInfoButton from 'components/ProfileInfoButton';
 import Timer from 'components/Timer';
-import { sourceAssetNames } from 'config/assets';
+import { getBazaarForAsset, sourceAssetNames } from 'config/assets';
+import BazaarTable from 'components/BazaarTable';
+import SuccessButton from 'components/SucessButton';
 
 const { Text } = Typography;
 const { confirm } = Modal;
-const { Panel } = Collapse;
 
-const StyledCollapse = styled(Collapse)`
+const Wrapper = styled.div`
+    position: relative;
     width: 100%;
-    border-radius: 20px 20px 0 0;
-    filter: drop-shadow(rgba(25, 19, 38, 0.15) 0px 1px 4px);
+    padding: 16px 118px;
+
+    @media (max-width: 1200px) {
+        padding: 16px 60px;
+    }
 `;
 
-const StyledPanel = styled(Panel)`
-    & > .ant-collapse-header {
-        padding: 24px 32px !important;
-    }
-
+const BazaarTableOuter = styled.div`
+    width: 100%;
+    max-width: 1300px;
+    margin: auto;
     text-align: center;
 `;
 
+const BoldColumn = styled.span`
+    font-weight: 700;
+    color: #33303E;
+`;
+
 const LoadMoreButton = styled(Button)`
-    self-align: center;
     margin-top: 10px;
 `;
 
-const StyledSkeleton = styled(Skeleton)`
-    & > .ant-skeleton-content > .ant-skeleton-paragraph {
-        margin-bottom: 0 !important;
+const AssetWrapper = styled.div`
+    max-height: 40px;
+    max-width: 40px;
+    width: 100%;
+    font-size: 18px;
+    position: relative;
+    
+    &:after {
+        content: "";
+        display: block;
+        padding-top: 100%;
+        width: 40px;
+        height: 32px;
     }
 `;
 
-const RowWrapper = styled.div`
-    display: flex;
-    width: 100%;
-    justify-content: space-around;
-`;
-
-const Column = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+const TargetAssetIcon = styled.img`
+    position: absolute;
+    width: 25px;
+    inset: auto 0px 0px auto;
+    z-index: 6;
 `;
 
 function List({ isLoading, isLoadingMore, items, refresh, loadMore, hasMore }) {
     const { t } = useTranslation();
     const bazaarContract = useBazaarContract();
+
+    const dataColumns = [
+        {
+            title: t('Asset'),
+            dataIndex: 'sourceAsset',
+            key: 'sourceAsset',
+            width: '15%',
+            ellipsis: true,
+            render: (v, item) => {
+                const BazaarIcon = getBazaarForAsset(item.sourceAsset)?.icon;
+
+                if (!BazaarIcon) return
+
+                return (
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <div style={{ width: '40px', height: '32px', paddingRight: '8px' }}>
+                            <AssetWrapper>
+                                <TargetAssetIcon
+                                    src={`/images/tokens/${item.targetAsset}.png`}
+                                />
+                                <BazaarIcon style={{ position: 'absolute', inset: '0px auto auto 0px', zIndex: '5' }} />
+                            </AssetWrapper>
+                        </div>
+                        <span>{t(sourceAssetNames[item.sourceAsset])}</span>
+                    </div>
+                );
+            }
+        },
+        {
+            title: t('Amount'),
+            dataIndex: 'sourceAmount',
+            key: 'sourceAmount',
+            width: '10%',
+            ellipsis: true,
+            render: (v, item) => <BoldColumn>{transformSourceAmount(item.sourceAsset, item.sourceAmount)}</BoldColumn>
+        },
+        {
+            title: t('Price'),
+            dataIndex: 'targetAmount',
+            key: 'targetAmount',
+            width: '12%',
+            ellipsis: true,
+            render: (v, item) => <BoldColumn>{transformTargetAmount(item.targetAsset, item.targetAmount)}</BoldColumn>
+        },
+        {
+            title: t('Buyer'),
+            dataIndex: 'buyer',
+            key: 'buyer',
+            width: '10%',
+            render: (v, item) => item.buyer != AddressZero ? accountEllipsis(item.buyer) : '-'
+        },
+        {
+            title: t('OrderID'),
+            dataIndex: 'id',
+            width: '8%',
+            ellipsis: true,
+            key: 'id',
+        },
+        {
+            title: t('CreatedAt'),
+            key: 'created_at',
+            width: '12%',
+            render: (v, item) => timestampInLocale(item.createdAt)
+        },
+        {
+            title: t('Status'),
+            dataIndex: 'state',
+            key: 'state',
+            width: '12%',
+            ellipsis: true,
+            render: (v, item) => orderStateInString(item.state)
+        },
+        {
+            title: t('Actions'),
+            key: 'actions',
+            render: (v, item) => {
+                return (
+                    <Space direction='horizontal'>
+                        {
+                            item.state === orderStates.Placed &&
+                            <Button
+                                onClick={handleCloseClick(item)}
+                                danger
+                                disabled={!isItemClosable(item)}
+                                size="middle"
+                                type="primary"
+                                shape="round"
+                                icon={<CloseCircleOutlined />}
+                            >
+                                {t('Close Sale')}
+                            </Button>
+                        }
+                        {
+                            item.state === orderStates.Sold &&
+                            <Button
+                                onClick={handleCancelClick(item)}
+                                danger
+                                disabled={!isItemCancellable(item)}
+                                size="middle"
+                                type="primary"
+                                shape="round"
+                                icon={<CloseCircleOutlined />}
+                            >
+                                <span>{t('Cancel Sale')}&nbsp;</span>
+                                {isInCancellableState(item) && timeToCancel(item) > 0 && <Timer initialValue={timeToCancel(item)} />}
+                            </Button>
+                        }
+                        {
+                            (isInWithdrawableState(item) && remainingTime(item) > 0) &&
+                            <SuccessButton
+                                onClick={handleWithdrawClick(item)}
+                                disabled={!isItemWithdrawable(item)}
+                                size="middle"
+                                type="primary"
+                                shape="round"
+                            >
+                                <span>{t('Withdraw')}&nbsp;</span>
+                                <span>{isInWithdrawableState(item) && remainingTime(item) > 0 && <Timer initialValue={remainingTime(item)} />}</span>
+                            </SuccessButton>
+                        }
+                        {item.buyer != AddressZero &&
+                            <ProfileInfoButton
+                                address={item.buyer}
+                                modalTitle={t('Buyer Info')}
+                                buttonTitle={t('Buyer')}
+                            />
+                        }
+                    </Space>
+                )
+            }
+        }
+    ];
 
     const remainingTime = (item) => {
         const now = Date.now();
@@ -101,51 +246,6 @@ function List({ isLoading, isLoadingMore, items, refresh, loadMore, hasMore }) {
         }
 
         return isInWithdrawableState(item);
-    }
-
-    const renderSkeleton = () => {
-        return (
-            <>
-                <StyledPanel header={<StyledSkeleton active title={false} paragraph={{ rows: 2, width: '100%' }} />} key={1} collapsible="disabled" />
-                <StyledPanel header={<StyledSkeleton active title={false} paragraph={{ rows: 2, width: '100%' }} />} key={2} collapsible="disabled" />
-                <StyledPanel header={<StyledSkeleton active title={false} paragraph={{ rows: 2, width: '100%' }} />} key={3} collapsible="disabled" />
-            </>
-        );
-    }
-
-    const renderHeader = (item) => {
-        return (
-            <RowWrapper>
-                <Column>
-                    <Text type="secondary">{t('Order ID')}</Text>
-                    <Text>{item.id}</Text>
-                </Column>
-                <Column>
-                    <Text type="secondary">{t('Asset')}</Text>
-                    <Text>{t(sourceAssetNames[item.sourceAsset])}</Text>
-                </Column>
-                <Column>
-                    <Text type="secondary">{t('Amount')}</Text>
-                    <Text>{transformSourceAmount(item.sourceAsset, item.sourceAmount)}</Text>
-                </Column>
-                <Column>
-                    <Text type="secondary">{t('Price')}</Text>
-                    <Text>{transformTargetAmount(item.targetAsset, item.targetAmount)}</Text>
-                </Column>
-                <Column>
-                    <Text type="secondary">{t('Buyer')}</Text>
-                    <Text>{item.buyer != AddressZero ? accountEllipsis(item.buyer) : '-'}</Text>
-                </Column>
-                <Column>
-                    <Text type="secondary">{t('Status')}</Text>
-                    <Text>{orderStateInString(item.state)}</Text>
-                </Column>
-                <Column>
-                    <Text type="secondary">{t('Created At')}</Text>
-                    <Text>{timestampInLocale(item.createdAt)}</Text>
-                </Column>
-            </RowWrapper>
-        );
     }
 
     function renderConfirmCloseContent(item) {
@@ -284,91 +384,33 @@ function List({ isLoading, isLoadingMore, items, refresh, loadMore, hasMore }) {
         }
     }
 
-    const renderItems = () => {
-        return items.map(item => (
-            <StyledPanel header={renderHeader(item)} key={item.id}>
-                <Space direction='horizontal'>
-                    {
-                        item.state === orderStates.Placed &&
-                        <Button
-                            onClick={handleCloseClick(item)}
-                            danger
-                            disabled={!isItemClosable(item)}
-                            size="large"
-                            type="primary"
-                            shape="round"
-                        >
-                            {t('Close Sale')}
-                        </Button>
-                    }
-                    {
-                        item.state === orderStates.Sold &&
-                        <Button
-                            onClick={handleCancelClick(item)}
-                            danger
-                            disabled={!isItemCancellable(item)}
-                            size="large"
-                            type="primary"
-                            shape="round"
-                        >
-                            <span>{t('Cancel Sale')}&nbsp;</span>
-                            {isInCancellableState(item) && timeToCancel(item) > 0 && <Timer initialValue={timeToCancel(item)} />}
-                        </Button>
-                    }
-                    <Button
-                        onClick={handleWithdrawClick(item)}
-                        disabled={!isItemWithdrawable(item)}
-                        size="large"
-                        type="primary"
-                        shape="round"
-                    >
-                        <span>{t('Withdraw Guarantee Deposit')}&nbsp;</span>
-                        <span>{isInWithdrawableState(item) && remainingTime(item) > 0 && <Timer initialValue={remainingTime(item)} />}</span>
-                    </Button>
-                    {item.buyer != AddressZero &&
-                        <ProfileInfoButton
-                            address={item.buyer}
-                            modalTitle={t('Buyer Info')}
-                            buttonTitle={t('Buyer Info')}
-                        />
-                    }
-                </Space>
-            </StyledPanel>
-        ));
-    }
-
-    const renderList = () => {
-        if (items.length < 1 && !isLoading) {
-            return <Empty />;
-        }
-
-        return (
-            <>
-                <StyledCollapse expandIconPosition="right">
-                    {
-                        isLoading ? renderSkeleton() : renderItems()
-                    }
-                </StyledCollapse>
-                <LoadMoreButton
-                    icon={<DownOutlined />}
-                    shape="round"
-                    type="dashed"
-                    loading={isLoadingMore}
-                    disabled={!hasMore}
-                    onClick={() => loadMore()}
-                >
-                    {t('Load More')}
-                </LoadMoreButton>
-            </>
-        )
-    }
-
     return (
-        <Row style={{ width: '100%', padding: "24px" }} align="center">
-            <Col xl={18} lg={22} md={22} sm={24} xs={24} style={{ textAlign: 'center' }}>
-                {renderList()}
-            </Col>
-        </Row>
+        <Wrapper>
+            <BazaarTableOuter>
+                <BazaarTable
+                    dataSource={items}
+                    columns={dataColumns}
+                    loading={isLoading}
+                    pagination={false}
+                    size={'small'}
+                    rowKey={'id'}
+                />
+                {
+                    hasMore &&
+                    <LoadMoreButton
+                        icon={<DownOutlined />}
+                        shape="round"
+                        type="dashed"
+                        loading={isLoadingMore}
+                        disabled={!hasMore}
+                        onClick={() => loadMore()}
+                    >
+                        {t('Load More')}
+                    </LoadMoreButton>
+                }
+
+            </BazaarTableOuter>
+        </Wrapper>
     );
 }
 

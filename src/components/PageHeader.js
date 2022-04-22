@@ -3,8 +3,12 @@ import styled from "styled-components";
 
 const Header = styled.div`
     width: 100%;
-    padding: 40px 80px 20px 80px;
+    padding: 40px 118px 20px 118px;
     margin-bottom: 0px;
+
+    @media (max-width: 1200px) {
+        padding: 40px 60px 20px 60px;
+    }
 `;
 
 const PageTitle = styled.h1`
@@ -17,7 +21,9 @@ const PageTitle = styled.h1`
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-bottom: 0px !important;
+    width: 100%;
+    max-width: 1300px;
+    margin: auto;
 `;
 
 const PageSubTitle = styled.h2`

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchOrders, loadMoreOrders } from "state/order";
+import { fetchOrders, loadMoreOrders, setOrders } from "state/order";
 import useRefresh from "./useRefresh";
 
 export const useFetchOrders = (initialAutoRefresh = true, filters = {}) => {
@@ -20,6 +20,10 @@ export const useFetchOrders = (initialAutoRefresh = true, filters = {}) => {
         dispatch(fetchOrders(filters));
     }
 
+    const setItems = (items) => {
+        dispatch(setOrders(items));
+    }
+
     const loadMore = () => {
         dispatch(loadMoreOrders(filters));
     }
@@ -28,7 +32,7 @@ export const useFetchOrders = (initialAutoRefresh = true, filters = {}) => {
         setAutoRefresh(prev => !prev);
     }
 
-    return { toggleAutoRefresh, setAutoRefresh, autoRefresh, refresh, loadMore };
+    return { toggleAutoRefresh, setAutoRefresh, autoRefresh, refresh, loadMore, setItems };
 }
 
 export const useOrders = () => {

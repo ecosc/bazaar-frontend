@@ -1,21 +1,10 @@
 import { useWeb3React } from "@web3-react/core";
-import { Button } from "antd";
 import { ShoppingCartOutlined } from '@ant-design/icons'
 import { useProfile } from "hooks/useProfile";
 import { useTranslation } from "react-i18next";
 import ConnectWalletButton from "./ConnectWalletButton";
 import CreateProfileButton from "./CreateProfileButton";
-import styled from "styled-components";
-
-const StyledButton = styled(Button)`
-    background: #23A981 !important;
-    border: 2px solid rgba(255, 255, 255, 0.1) !important;
-    color: white !important;
-
-    ${({ disabled }) => disabled && `
-        opacity: 0.3;
-    `}
-`;
+import SuccessButton from "./SucessButton";
 
 function BuyButton({ ...props }) {
     const { t } = useTranslation();
@@ -31,7 +20,7 @@ function BuyButton({ ...props }) {
     }
 
     return (
-        <StyledButton
+        <SuccessButton
             size="middle"
             type="primary"
             shape="round"
@@ -39,7 +28,7 @@ function BuyButton({ ...props }) {
             {...props}
         >
             {t('Buy')}
-        </StyledButton>
+        </SuccessButton>
     );
 }
 
