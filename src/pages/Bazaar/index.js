@@ -76,6 +76,10 @@ const Actions = styled.div`
     width: 100%;
     padding: 16px 118px;
     background: ${({ theme }) => theme.colors.pageActionsBackground};
+
+    @media (max-width: 1200px) {
+        padding: 16px 60px;
+    }
 `;
 
 const ActionsInner = styled.div`
@@ -85,8 +89,14 @@ const ActionsInner = styled.div`
 `;
 
 const ActionItem = styled.div`
-    margin: 0 25px;
     display: inline-block;
+    ${({ theme }) => theme.dir == 'rtl' && `
+        margin-left: 25px;
+    `}
+
+    ${({ theme }) => theme.dir == 'ltr' && `
+        margin-right: 25px;
+    `}
 `;
 
 const StyledSelect = styled(Select)`
@@ -192,7 +202,7 @@ function Bazaar() {
                         >
                             {
                                 Object.entries(bazaars).map(([id, b]) => (
-                                    <Option key={b.id} value={b.id}>{b.icon} {t(b.symbol)}</Option>
+                                    <Option key={b.id} value={b.id}>{<b.icon />} {t(b.symbol)}</Option>
                                 ))
                             }
                         </StyledSelect>
@@ -251,6 +261,7 @@ function Bazaar() {
                 refresh={refresh}
                 loadMore={loadMore}
                 hasMore={hasMore}
+                currentBazaar={currentBazaar}
             />
         </Wrapper >
     );

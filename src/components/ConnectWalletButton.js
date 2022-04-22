@@ -10,7 +10,7 @@ const StyledButton = styled(Button)`
     border: none !important;
     align-self: center;
 
-    ${({ large }) => large && `
+    ${({ size }) => size != 'middle' && `
         height: 44px;
         font-style: normal;
         font-weight: 700;

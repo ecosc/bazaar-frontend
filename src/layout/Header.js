@@ -232,7 +232,7 @@ function AppHeader() {
                                 <WalletIcon color="secondary" />
                             </WalletIconWrapper>
                         </Dropdown>
-                        : <ConnectWalletButton large/>
+                        : <ConnectWalletButton />
                 }
 
             </HeaderOptions>

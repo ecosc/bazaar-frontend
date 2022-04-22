@@ -1,9 +1,3 @@
-import {
-    DollarCircleOutlined,
-    GoldOutlined,
-    ExperimentOutlined,
-    SlidersOutlined
-} from '@ant-design/icons';
 import Icon from '@ant-design/icons';
 import { ReactComponent as GoldSVG } from 'assets/images/gold.svg';
 import { ReactComponent as FiatSVG } from 'assets/images/fiat.svg';
@@ -179,7 +173,7 @@ export const bazaars = {
     GOLD: {
         id: 'GOLD',
         symbol: 'Gold',
-        icon: <Icon component={GoldSVG}/>,
+        icon: (props) => <Icon component={GoldSVG} {...props} />,
         assets: [
             sourceAssets.GOLD_OUNCE,
             sourceAssets.SILVER_OUNCE,
@@ -196,7 +190,7 @@ export const bazaars = {
     FIAT: {
         id: 'FIAT',
         symbol: 'Fiat',
-        icon: <Icon component={FiatSVG}/>,
+        icon: (props) => <Icon component={FiatSVG} {...props} />,
         assets: [
             sourceAssets.USD,
             sourceAssets.MANAT,
@@ -208,7 +202,7 @@ export const bazaars = {
     PETROCHEMICAL: {
         id: 'PETROCHEMICAL',
         symbol: 'Petrochemical',
-        icon: <Icon component={PetroSVG}/>,
+        icon: (props) => <Icon component={PetroSVG} {...props} />,
         assets: [
             sourceAssets.POLYSTYRENE,
             sourceAssets.BITUMEN,
@@ -229,7 +223,7 @@ export const bazaars = {
     METAL: {
         id: 'METAL',
         symbol: 'Metal',
-        icon: <Icon component={MetalSVG}/>,
+        icon: (props) => <Icon component={MetalSVG} {...props} />,
         assets: [
             sourceAssets.STEEL,
             sourceAssets.IRON_ORE,

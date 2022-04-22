@@ -230,7 +230,7 @@ const GlobalStyle = createGlobalStyle`
   .ant-select-item-option-selected:not(.ant-select-item-option-disabled) > .ant-select-item-option-state > .anticon {
     color: rgba(35, 169, 129, 1);
     border: 1px solid rgba(35, 169, 129, 1);
-    padding: 4px 4px;
+    padding: 2.5px 2.5px;
     border-radius: 50%;
   }
 
