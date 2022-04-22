@@ -114,7 +114,7 @@ function EditProfile() {
                     extra={backButton()}
                 >
                     {
-                        !account ? <ConnectWalletButton /> : !hasProfile ? <CreateProfileButton /> : (
+                        !account ? <ConnectWalletButton large/> : !hasProfile ? <CreateProfileButton /> : (
                             <UpdateAccountForm
                                 form={form}
                                 name="create-account-form"

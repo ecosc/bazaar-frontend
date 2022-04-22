@@ -124,7 +124,7 @@ function CreateProfile() {
                     bordered={false}
                 >
                     {
-                        !account ? <ConnectWalletButton /> : (
+                        !account ? <ConnectWalletButton large/> : (
                             <CreateAccountForm
                                 form={form}
                                 name="create-account-form"

@@ -194,7 +194,7 @@ function AppHeader() {
                     <Link to={'/sales/new'}>{t('New Order')}</Link>
                 </Menu.Item>
                 {
-                    account &&
+                    (account && profile) &&
                     <Menu.Item
                         key="/sales"
                         icon={<ShoppingOutlined />}
@@ -204,7 +204,7 @@ function AppHeader() {
 
                 }
                 {
-                    account &&
+                    (account && profile) &&
                     <Menu.Item
                         key="/purchases"
                         icon={<ShoppingCartOutlined />}
@@ -232,7 +232,7 @@ function AppHeader() {
                                 <WalletIcon color="secondary" />
                             </WalletIconWrapper>
                         </Dropdown>
-                        : <ConnectWalletButton />
+                        : <ConnectWalletButton large/>
                 }
 
             </HeaderOptions>

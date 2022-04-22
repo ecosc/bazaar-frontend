@@ -6,15 +6,17 @@ import styled from "styled-components";
 import { ReactComponent as WalletSvg } from 'assets/images/wallet.svg';
 
 const StyledButton = styled(Button)`
-    height: 44px;
     background: ${({ theme }) => theme.colors.connectWalletBackground};
     border: none !important;
     align-self: center;
 
-    font-style: normal;
-    font-weight: 700;
-    font-size: 16px !important;
-    line-height: 20px;
+    ${({ large }) => large && `
+        height: 44px;
+        font-style: normal;
+        font-weight: 700;
+        font-size: 16px !important;
+        line-height: 20px;  
+    `}
 
     &:hover, &:focus {
         background: ${({ theme }) => theme.colors.connectWalletBackgroundFocus};
@@ -22,13 +24,13 @@ const StyledButton = styled(Button)`
 `;
 
 
-function ConnectWalletButton() {
+function ConnectWalletButton({label, ...props}) {
     const { t } = useTranslation();
     const { openModal } = useConnectWallet();
 
     return (
-        <StyledButton onClick={openModal} type="primary" shape="round" icon={<Icon component={WalletSvg} />}>
-            {t('Connect Wallet')}
+        <StyledButton onClick={openModal} type="primary" shape="round" icon={<Icon component={WalletSvg} />} {...props}>
+            {label ? label : t('Connect Wallet')}
         </StyledButton>
     );
 }

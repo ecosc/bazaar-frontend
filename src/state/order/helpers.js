@@ -2,7 +2,7 @@ import { getBazaarContract } from "hooks/useContracts";
 import { AddressZero } from '@ethersproject/constants'
 import { orderStates } from "utils/order";
 
-export const DEFAULT_PAGE_SIZE = 10;
+export const DEFAULT_PAGE_SIZE = 30;
 
 const parseOrders = (_orders) => {
     return _orders.map(o => ({

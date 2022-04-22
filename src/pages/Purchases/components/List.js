@@ -271,8 +271,8 @@ function List({ isLoading, isLoadingMore, items, refresh, loadMore, hasMore }) {
                     </Button>
                     <ProfileInfoButton
                         address={item.seller}
-                        modalTitle={t('Seller Info')}
-                        buttonTitle={t('Seller Info')}
+                        modalTitle={t('Seller')}
+                        buttonTitle={t('Seller')}
                         isSeller
                     />
                 </Space>

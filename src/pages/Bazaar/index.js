@@ -1,6 +1,10 @@
 import { useWeb3React } from "@web3-react/core";
 import { Col, Row, Select, Switch, Button, Typography } from "antd";
-import { ReloadOutlined } from '@ant-design/icons'
+import {
+    ReloadOutlined,
+    ShopOutlined,
+    AppstoreOutlined
+} from '@ant-design/icons'
 import { useFetchOrders, useOrders } from "hooks/useOrder";
 import { useProfile } from "hooks/useProfile";
 import { useEffect, useState } from "react";
@@ -10,9 +14,6 @@ import { orderStates } from "utils/order";
 import List from "./components/List";
 import PageHeader from "components/PageHeader";
 import { bazaars, sourceAssetNames } from "config/assets";
-import HeadImg1 from 'assets/images/bazaar-1.png'
-import HeadImg2 from 'assets/images/bazaar-2.png'
-import HeadImg3 from 'assets/images/bazaar-3.png'
 
 const { Option } = Select;
 const { Text } = Typography;
@@ -23,21 +24,69 @@ const Wrapper = styled.div`
     align-items: center;
 `;
 
-const Actions = styled(Row)`
+const HistorySwitch = styled.div`
+    display: flex;
+    align-items: center;
+    background: #322C44;
+    border-radius: 12px;
+    ${({ theme }) => theme.dir == 'rtl' && `
+        float: left;
+    `}
+
+    ${({ theme }) => theme.dir == 'ltr' && `
+        float: right;
+    `}
+`;
+
+const HistorySwitchItem = styled.span`
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 12px;
+    color: #858192;
+    font-weight: 600;
+
+    &:first-child {
+        ${({ theme }) => theme.dir == 'rtl' && `
+            margin-left: 8px;
+        `}
+
+        ${({ theme }) => theme.dir == 'ltr' && `
+            margin-right: 8px;
+        `}
+    }
+
+    &.active {
+        background: ${({ theme }) => theme.colors.headerIconColor};
+        color: ${({ theme }) => theme.colors.background};
+    }
+`
+
+const ActionItemLabel = styled(Text)`
+    ${({ theme }) => theme.dir == 'rtl' && `
+        margin-left: 16px;
+    `}
+
+    ${({ theme }) => theme.dir == 'ltr' && `
+        margin-right: 16px;
+    `}
+`;
+
+const Actions = styled.div`
+    position: relative;
     width: 100%;
-    padding: 16px;
+    padding: 16px 118px;
+    background: ${({ theme }) => theme.colors.pageActionsBackground};
+`;
 
-    background: ${({ theme }) => theme.colors.pageActionsBackground};;
+const ActionsInner = styled.div`
+    width: 100%;
+    max-width: 1300px;
+    margin: auto;
+`;
 
-    & > .ant-col {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    & > .ant-col > * {
-        padding: 0 10px;
-    }
+const ActionItem = styled.div`
+    margin: 0 25px;
+    display: inline-block;
 `;
 
 const StyledSelect = styled(Select)`
@@ -58,13 +107,14 @@ const StyledSelect = styled(Select)`
     & > .ant-select-selector > .ant-select-selection-item {
         height: 40px !important;
         line-height: 40px !important;
-    }
+        ${({ theme }) => theme.dir == 'rtl' && `
+            margin-left: 15px;
+        `}
 
-    // & > .ant-select-selector{
-    //     height: 40px !important;
-    //     line-height: 40px !important;
-    //     padding: 0 12px !important;
-    // }
+        ${({ theme }) => theme.dir == 'ltr' && `
+            margin-right: 15px;
+        `}
+    }
 `;
 
 const defaultFilters = {
@@ -101,42 +151,44 @@ function Bazaar() {
     }
 
     const onShowHistoryChange = (showHistory) => {
-        if (showHistory) {
-            setFilters(prev => ({
-                ...prev,
-                states: [
-                    orderStates.Placed,
-                    orderStates.Sold,
-                    orderStates.Finished,
-                    orderStates.Closed,
-                    orderStates.Withdrew,
-                    orderStates.CancelledBySeller,
-                    orderStates.CancelledByBuyer,
-                ],
-                withExpireds: true,
-            }));
-        } else {
-            setFilters(prev => ({
-                ...prev,
-                states: defaultFilters.states,
-                withExpireds: false,
-            }));
+        return () => {
+            if (showHistory) {
+                setFilters(prev => ({
+                    ...prev,
+                    states: [
+                        orderStates.Placed,
+                        orderStates.Sold,
+                        orderStates.Finished,
+                        orderStates.Closed,
+                        orderStates.Withdrew,
+                        orderStates.CancelledBySeller,
+                        orderStates.CancelledByBuyer,
+                    ],
+                    withExpireds: true,
+                }));
+            } else {
+                setFilters(prev => ({
+                    ...prev,
+                    states: defaultFilters.states,
+                    withExpireds: false,
+                }));
+            }
         }
     }
 
     return (
         <Wrapper>
-            <img src={HeadImg1} style={{width: '100%'}}/>
             <PageHeader title={t('Market')} subtitle={t('Transactions that are live and you can buy with tiny fee')} />
-            <Actions align="center" gutter={10}>
-                <Col xl={16} lg={22} md={22} sm={24} xs={24}>
-                    <div>
-                        <Text type="secondary">{t('Merket')}: </Text>
+            <Actions>
+                <ActionsInner>
+                    <ActionItem>
+                        <ActionItemLabel type="secondary"><ShopOutlined style={{ margin: '2px' }} />{t('Market')} </ActionItemLabel>
                         <StyledSelect
                             style={{ minWidth: '100px' }}
                             showSearch={false}
                             defaultValue={bazaars.GOLD.id}
                             onChange={onBazaarChanged}
+                            dropdownMatchSelectWidth={false}
                         >
                             {
                                 Object.entries(bazaars).map(([id, b]) => (
@@ -144,9 +196,9 @@ function Bazaar() {
                                 ))
                             }
                         </StyledSelect>
-                    </div>
-                    <div>
-                        <Text type="secondary">{t('Assets')}: </Text>
+                    </ActionItem>
+                    <ActionItem>
+                        <ActionItemLabel type="secondary"><AppstoreOutlined style={{ margin: '2px' }} />{t('Assets')} </ActionItemLabel>
                         <StyledSelect
                             style={{ width: '300px' }}
                             mode="multiple"
@@ -155,6 +207,7 @@ function Bazaar() {
                             onChange={onAssetsChanged}
                             maxTagCount='responsive'
                             value={filters.sourceAssets}
+                            dropdownMatchSelectWidth={false}
                         >
                             {
                                 assets.map((asset) => (
@@ -162,24 +215,34 @@ function Bazaar() {
                                 ))
                             }
                         </StyledSelect>
-                    </div>
-                    <div>
+                    </ActionItem>
+                    {/* <div>
                         <Text type="secondary">{t('Auto Refresh')}: </Text>
                         <Switch onChange={(v) => setAutoRefresh(v)} checked={autoRefresh} />
-                    </div>
-                    <div>
-                        <Text type="secondary">{t('History')}: </Text>
-                        <Switch onChange={onShowHistoryChange} checked={filters.withExpireds} />
-                    </div>
-                    <Button
+                    </div> */}
+                    <HistorySwitch>
+                        <HistorySwitchItem
+                            className={!filters.withExpireds && "active"}
+                            onClick={onShowHistoryChange(false)}
+                        >
+                            {t('Recent Orders')}
+                        </HistorySwitchItem>
+                        <HistorySwitchItem
+                            className={filters.withExpireds && "active"}
+                            onClick={onShowHistoryChange(true)}
+                        >
+                            {t('History Orders')}
+                        </HistorySwitchItem>
+                    </HistorySwitch>
+                    {/* <Button
                         icon={<ReloadOutlined />}
                         loading={isOrdersLoading}
                         onClick={() => refresh()}
                         shape="circle"
                         type="primary"
                         size="middle"
-                    />
-                </Col>
+                    /> */}
+                </ActionsInner>
             </Actions>
             <List
                 isLoading={(account && isProfileLoading) || isOrdersLoading}

@@ -68,6 +68,7 @@ export const ordersSlice = createSlice({
         })
         builder.addCase(loadMoreOrders.fulfilled, (state, action) => {
             state.isLoadingMore = false;
+            state.hasMore = false;
             if (action.payload != null) {
                 if (action.payload.length > 0) {
                     state.orders = [...state.orders, ...action.payload];

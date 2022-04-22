@@ -19,8 +19,8 @@ export const orderStateNames = {
     [orderStates.Closed]: 'Closed',
     [orderStates.Withdrew]: 'Withdrew',
     [orderStates.Expired]: 'Expired',
-    [orderStates.CancelledBySeller]: 'Cancelled By Seller',
-    [orderStates.CancelledByBuyer]: 'Cancelled By Buyer'
+    [orderStates.CancelledBySeller]: 'Cancelled(Seller)',
+    [orderStates.CancelledByBuyer]: 'Cancelled(Buyer)'
 };
 
 export const orderStateInString = (state) => {

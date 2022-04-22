@@ -309,7 +309,7 @@ function CreateOrder() {
                     bordered={false}
                 >
                     {
-                        !account ? <ConnectWalletButton /> : !hasProfile ? <CreateProfileButton /> : (
+                        !account ? <ConnectWalletButton large /> : !hasProfile ? <CreateProfileButton /> : (
                             <CreateOrderForm
                                 form={form}
                                 name="create-order-form"

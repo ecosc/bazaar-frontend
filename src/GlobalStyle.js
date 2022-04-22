@@ -14,6 +14,10 @@ const GlobalStyle = createGlobalStyle`
     `}
   }
 
+  .ant-spin-container:after {
+    background: ${({ theme }) => theme.colors.maskBackground} !important;
+  }
+
   .ant-layout-header {
     background: ${({ theme }) => theme.colors.headerBackground} !important;
     z-index: 1000 !important;
@@ -183,7 +187,7 @@ const GlobalStyle = createGlobalStyle`
   .ant-select-selector {
     height: 25px !important;
     line-height: 25px !important;
-    border-radius: 25px !important;
+    border-radius: 12px !important;
     border: unset !important;
     padding: 0 !important;
   }
@@ -204,17 +208,69 @@ const GlobalStyle = createGlobalStyle`
   }
 
   .ant-select-dropdown {
-    background: ${({ theme }) => theme.colors.inputBackground} !important;
+    background: ${({ theme }) => theme.colors.cardBackground} !important;
     border: 1px solid ${({ theme }) => theme.colors.border} !important;
     border-radius: 10px;
+  }
+
+  .ant-select-item-option-content {
+    font-weight: normal;
+    display: flex;
+    align-items: center;
+  }
+
+  .ant-select-item-option-selected > .ant-select-item-option-content {
+    font-weight: 600;
   }
 
   .ant-select:not(.ant-select-customize-input) .ant-select-selector {
     background: ${({ theme }) => theme.colors.inputBackground} !important;
   }
 
+  .ant-select-item-option-selected:not(.ant-select-item-option-disabled) > .ant-select-item-option-state > .anticon {
+    color: rgba(35, 169, 129, 1);
+    border: 1px solid rgba(35, 169, 129, 1);
+    padding: 4px 4px;
+    border-radius: 50%;
+  }
+
+  .ant-select-item-group > span {
+    display: flex;
+    align-items: center;
+  }
+
+  .ant-select-item-group > span > .anticon {
+    font-size: 1.5rem;
+    ${({ theme }) => theme.dir == 'rtl' && `
+      margin-left: 8px;
+    `}
+
+    ${({ theme }) => theme.dir == 'ltr' && `
+      margin-right: 8px;
+    `}
+  }
+
+  .ant-select-item-option-content > .anticon {
+    font-size: 1.5rem !important;
+    ${({ theme }) => theme.dir == 'rtl' && `
+      margin-left: 8px;
+    `}
+
+    ${({ theme }) => theme.dir == 'ltr' && `
+      margin-right: 8px;
+    `}
+  }
+
   .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
-    background: ${({ theme }) => theme.colors.inputSecondary} !important;
+    background: transparent;
+  }
+
+  .ant-select-item-option:not(.ant-select-item-option-grouped) {
+    margin: 0 5px;
+  }
+
+  .ant-select-item-option:nth-last-child(n+2):not(.ant-select-item-option-grouped) {
+    border-bottom: 1px solid rgba(196, 196, 196, 0.2);
   }
 
   .ant-select-item-option-active:not(.ant-select-item-option-disabled) {

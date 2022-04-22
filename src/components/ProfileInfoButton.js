@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useState } from 'react';
 import { getProfile } from 'state/profile/helpers';
 import { getBazaarContract } from 'hooks/useContracts';
+import { UserOutlined } from '@ant-design/icons'
 
 const { info } = Modal;
 const { Text } = Typography;
@@ -117,11 +118,12 @@ function ProfileInfoButton({ address, onClosed, modalTitle, onClick, buttonTitle
     return (
         <Button
             style={{ alignSelf: 'center' }}
-            size="large"
+            size="middle"
             type="primary"
             shape="round"
             loading={isLoading}
             onClick={handleOnClick}
+            icon={<UserOutlined />}
             {...props}
         >
             {buttonTitle}
