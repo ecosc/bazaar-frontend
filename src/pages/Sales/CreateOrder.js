@@ -255,7 +255,7 @@ function CreateOrder() {
 
     const renderSourceAssets = () => {
         return Object.entries(bazaars).map(([id, b]) => (
-            <OptGroup label={<span>{b?.icon} {t(b.symbol)}</span>} key={id}>
+            <OptGroup label={<span>{<b.icon />} {t(b.symbol)}</span>} key={id}>
                 {
                     b.assets.map((asset) => (
                         <Option value={asset} key={asset}>{t(sourceAssetNames[asset])}</Option>

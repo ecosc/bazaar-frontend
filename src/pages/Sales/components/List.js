@@ -15,6 +15,7 @@ import Timer from 'components/Timer';
 import { getBazaarForAsset, sourceAssetNames } from 'config/assets';
 import BazaarTable from 'components/BazaarTable';
 import SuccessButton from 'components/SucessButton';
+import { getTokenByAddress } from 'constants/tokens';
 
 const { Text } = Typography;
 const { confirm } = Modal;
@@ -64,8 +65,28 @@ const AssetWrapper = styled.div`
 const TargetAssetIcon = styled.img`
     position: absolute;
     width: 25px;
-    inset: auto 0px 0px auto;
     z-index: 6;
+
+    ${({ theme }) => theme.dir == 'ltr' && `
+        inset: auto 0px 0px auto;
+    `}
+
+    ${({ theme }) => theme.dir == 'rtl' && `
+        inset: auto auto 0px 0px;
+    `}
+`;
+
+const AssetContainer = styled.div`
+    width: 40px;
+    height: 32px;
+
+    ${({ theme }) => theme.dir == 'ltr' && `
+        padding-right: 8px;
+    `}
+
+    ${({ theme }) => theme.dir == 'rtl' && `
+        padding-left: 8px;
+    `}
 `;
 
 function List({ isLoading, isLoadingMore, items, refresh, loadMore, hasMore }) {
@@ -81,19 +102,20 @@ function List({ isLoading, isLoadingMore, items, refresh, loadMore, hasMore }) {
             ellipsis: true,
             render: (v, item) => {
                 const BazaarIcon = getBazaarForAsset(item.sourceAsset)?.icon;
+                const targetAssetAddress = getTokenByAddress(item.targetAsset)?.address;
 
                 if (!BazaarIcon) return
 
                 return (
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <div style={{ width: '40px', height: '32px', paddingRight: '8px' }}>
+                        <AssetContainer>
                             <AssetWrapper>
                                 <TargetAssetIcon
-                                    src={`/images/tokens/${item.targetAsset}.png`}
+                                    src={`/images/tokens/${targetAssetAddress}.png`}
                                 />
-                                <BazaarIcon style={{ position: 'absolute', inset: '0px auto auto 0px', zIndex: '5' }} />
+                                <BazaarIcon className='target-asset-icon' />
                             </AssetWrapper>
-                        </div>
+                        </AssetContainer>
                         <span>{t(sourceAssetNames[item.sourceAsset])}</span>
                     </div>
                 );

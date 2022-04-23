@@ -16,6 +16,15 @@ const SuccessButton = styled(Button)`
 
     ${({ disabled }) => disabled && `
         opacity: 0.3;
+
+
+        &:focus {
+            opacity: 0.3;
+        }
+    
+        &:hover {
+            opacity: 0.3;
+        }
     `}
 `;
 

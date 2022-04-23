@@ -1,33 +1,19 @@
 import PropTypes from 'prop-types';
-import { DownOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { DownOutlined } from '@ant-design/icons';
 import {
-    Typography,
-    Modal,
     Space,
-    message,
-    Button,
-    Alert
+    Button
 } from "antd";
 import styled from "styled-components";
 import BuyButton from "components/BuyButton";
-import React, { useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { accountEllipsis, secondsToTime, transformSourceAmount, transformTargetAmount } from "utils/transforms";
-import { calcBuyFee } from 'utils/fees';
-import { BAZAAR_ADDRESS } from 'constants/addresses';
-import { getTokenBalance } from 'hooks/useTokenBalance';
-import { useBazaarContract } from 'hooks/useContracts';
-import { APPROVE_STATES, useApproveToken } from 'hooks/useApproveToken';
-import { useNavigate } from 'react-router-dom';
-import { orderStateInString, orderStates } from 'utils/order';
+import { orderStateInString } from 'utils/order';
 import { getBazaarByID, sourceAssetNames } from 'config/assets';
 import ProfileInfoButton from 'components/ProfileInfoButton';
-import { useWeb3React } from '@web3-react/core';
-import { BIG_ZERO } from 'utils/bigNumber';
 import BazaarTable from 'components/BazaarTable';
-
-const { Text } = Typography;
-const { confirm } = Modal;
+import { getTokenByAddress } from 'constants/tokens';
 
 const Wrapper = styled.div`
     position: relative;
@@ -74,18 +60,32 @@ const AssetWrapper = styled.div`
 const TargetAssetIcon = styled.img`
     position: absolute;
     width: 25px;
-    inset: auto 0px 0px auto;
     z-index: 6;
+
+    ${({ theme }) => theme.dir == 'ltr' && `
+        inset: auto 0px 0px auto;
+    `}
+
+    ${({ theme }) => theme.dir == 'rtl' && `
+        inset: auto auto 0px 0px;
+    `}
+`;
+
+const AssetContainer = styled.div`
+    width: 40px;
+    height: 32px;
+
+    ${({ theme }) => theme.dir == 'ltr' && `
+        padding-right: 8px;
+    `}
+
+    ${({ theme }) => theme.dir == 'rtl' && `
+        padding-left: 8px;
+    `}
 `;
 
 function List({ isLoading, items, refresh, loadMore, isLoadingMore, hasMore, currentBazaar }) {
     const { t } = useTranslation();
-    const [loadingBalance, setLoadingBalance] = useState(false);
-    const bazaarContract = useBazaarContract();
-    const { account } = useWeb3React();
-    const navigate = useNavigate();
-
-    const { state: approveState, approve } = useApproveToken(handleOnApproved);
 
     const dataColumns = [
         {
@@ -96,17 +96,18 @@ function List({ isLoading, items, refresh, loadMore, isLoadingMore, hasMore, cur
             ellipsis: true,
             render: (v, item) => {
                 const BazaarIcon = getBazaarByID(currentBazaar).icon;
+                const targetAssetAddress = getTokenByAddress(item.targetAsset)?.address;
 
                 return (
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <div style={{ width: '40px', height: '32px', paddingRight: '8px' }}>
+                        <AssetContainer>
                             <AssetWrapper>
                                 <TargetAssetIcon
-                                    src={`/images/tokens/${item.targetAsset}.png`}
+                                    src={`/images/tokens/${targetAssetAddress}.png`}
                                 />
-                                <BazaarIcon style={{position: 'absolute', inset: '0px auto auto 0px', zIndex: '5'}} />
+                                <BazaarIcon className='target-asset-icon' />
                             </AssetWrapper>
-                        </div>
+                        </AssetContainer>
                         <span>{t(sourceAssetNames[item.sourceAsset])}</span>
                     </div>
                 );
@@ -172,11 +173,7 @@ function List({ isLoading, items, refresh, loadMore, isLoadingMore, hasMore, cur
             key: 'actions',
             render: (v, item) => {
                 return <Space direction='horizontal'>
-                    <BuyButton
-                        onClick={handleBuyClick(item)}
-                        loading={approveState === APPROVE_STATES.APPROVING || loadingBalance}
-                        disabled={!isItemBuyable(item)}
-                    />
+                    <BuyButton item={item} />
                     <ProfileInfoButton
                         address={item.seller}
                         modalTitle={t('Seller Info')}
@@ -187,98 +184,6 @@ function List({ isLoading, items, refresh, loadMore, isLoadingMore, hasMore, cur
             }
         }
     ];
-
-    const remainingTime = (item) => {
-        const now = Date.now();
-
-        return Math.floor(item.deadline - (now / 1000));
-    }
-
-    const isItemBuyable = (item) => {
-        if (remainingTime(item) <= 0) {
-            return false;
-        }
-
-        return item.state == orderStates.Placed;
-    }
-
-    function renderConfirmContent(item, balance) {
-        const {
-            targetAmount,
-            targetAsset
-        } = item;
-
-        const buyFee = calcBuyFee(targetAmount);
-        const totalPrice = targetAmount.add(buyFee);
-        const canAfford = balance.gte(totalPrice);
-
-        return (
-            <Space direction="vertical">
-                {!canAfford && <Alert message={t("You don't have enough token for buying order")} type="error" />}
-                <div>
-                    <Text type="secondary">{t('Buy Commission')}: </Text>
-                    <Text>{transformTargetAmount(targetAsset, buyFee)}</Text>
-                </div>
-                <div>
-                    <Text type="secondary">{t('Total Price')}: </Text>
-                    <Text>{transformTargetAmount(targetAsset, totalPrice)}</Text>
-                </div>
-                <div>
-                    <Text type="secondary">{t('Your Balance')}: </Text>
-                    <Text>{transformTargetAmount(targetAsset, balance)}</Text>
-                </div>
-            </Space>
-        );
-    }
-
-    function handleOnApproved({ item, balance }) {
-        const {
-            targetAmount,
-        } = item;
-
-        const buyFee = calcBuyFee(targetAmount);
-        const totalPrice = targetAmount.add(buyFee);
-        const canAfford = balance.gte(totalPrice);
-
-        confirm({
-            title: t('Confirm Transaction'),
-            icon: <ExclamationCircleOutlined />,
-            content: renderConfirmContent(item, balance),
-            okButtonProps: { disabled: !canAfford },
-            onOk() {
-                return bazaarContract.buy(item.id).
-                    then(() => {
-                        message.success(t("Order buy requested"));
-                        navigate('/purchases');
-                    }).
-                    catch(e => {
-                        console.error(e);
-                        message.error(t('Error while buying order'));
-                    });
-            },
-        });
-    }
-
-    const handleBuyClick = (item) => {
-        return async () => {
-            const { targetAmount, targetAsset } = item;
-            const buyFee = calcBuyFee(targetAmount);
-            const totalPrice = buyFee.add(targetAmount);
-            let balance;
-
-            setLoadingBalance(true);
-
-            try {
-                balance = await getTokenBalance(targetAsset, account);
-            } catch {
-                balance = BIG_ZERO;
-            }
-
-            approve(BAZAAR_ADDRESS, targetAsset, totalPrice, { item, balance });
-
-            setLoadingBalance(false);
-        }
-    }
 
     return (
         <Wrapper>

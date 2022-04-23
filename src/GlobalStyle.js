@@ -433,6 +433,20 @@ const GlobalStyle = createGlobalStyle`
   .ant-dropdown-menu-item {
     border-radius: 12px !important;
   }
+
+  .target-asset-icon {
+    position: absolute;
+    z-index: 5;
+
+    ${({ theme }) => theme.dir == 'ltr' && `
+      inset: 0px auto auto 0px;
+    `}
+
+    ${({ theme }) => theme.dir == 'rtl' && `
+      inset: 0px 0px auto auto;
+    `}
+  }
 `
+
 
 export default GlobalStyle;
