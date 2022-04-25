@@ -195,6 +195,7 @@ function List({ isLoading, items, refresh, loadMore, isLoadingMore, hasMore, cur
                     pagination={false}
                     size={'small'}
                     rowKey={'id'}
+                    scroll={{ x: 1000, y: '100%' }}
                 />
                 {
                     hasMore &&

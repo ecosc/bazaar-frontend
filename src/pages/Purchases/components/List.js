@@ -15,6 +15,7 @@ import { getBazaarForAsset, sourceAssetNames } from 'config/assets';
 import BazaarTable from 'components/BazaarTable';
 import SuccessButton from 'components/SucessButton';
 import { getTokenByAddress } from 'constants/tokens';
+import { getDirection } from 'localization';
 
 const { Text } = Typography;
 const { confirm } = Modal;
@@ -92,6 +93,7 @@ const AssetContainer = styled.div`
 function List({ isLoading, isLoadingMore, items, refresh, loadMore, hasMore }) {
     const { t } = useTranslation();
     const bazaarContract = useBazaarContract();
+    const dir = getDirection();
 
     const dataColumns = [
         {
@@ -148,6 +150,7 @@ function List({ isLoading, isLoadingMore, items, refresh, loadMore, hasMore }) {
             title: t('CreatedAt'),
             key: 'created_at',
             width: '12%',
+            ellipsis: true,
             render: (v, item) => timestampInLocale(item.createdAt)
         },
         {
@@ -164,6 +167,13 @@ function List({ isLoading, isLoadingMore, items, refresh, loadMore, hasMore }) {
             render: (v, item) => {
                 return (
                     <Space direction='horizontal'>
+                        <ProfileInfoButton
+                            address={item.seller}
+                            modalTitle={t('Seller')}
+                            title={t('Seller')}
+                            shape='circle'
+                            isSeller
+                        />
                         <SuccessButton
                             onClick={handleApproveClick(item)}
                             disabled={!isItemApprovable(item)}
@@ -186,12 +196,6 @@ function List({ isLoading, isLoadingMore, items, refresh, loadMore, hasMore }) {
                             <span>{t('Cancel Sale')}&nbsp;</span>
                             {isInCancellableState(item) && timeToCancel(item) > 0 && <Timer initialValue={timeToCancel(item)} />}
                         </Button>
-                        <ProfileInfoButton
-                            address={item.seller}
-                            modalTitle={t('Seller')}
-                            buttonTitle={t('Seller')}
-                            isSeller
-                        />
                     </Space>
                 )
             }
@@ -350,6 +354,7 @@ function List({ isLoading, isLoadingMore, items, refresh, loadMore, hasMore }) {
                     pagination={false}
                     size={'small'}
                     rowKey={'id'}
+                    scroll={{ x: 800, y: '100%' }}
                 />
                 {
                     hasMore &&

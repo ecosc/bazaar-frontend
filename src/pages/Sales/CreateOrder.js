@@ -332,8 +332,8 @@ function CreateOrder() {
                                         {renderSourceAssets()}
                                     </Select>
                                 </Form.Item>
-                                <Row style={{ marginBottom: 0 }} gutter={16}>
-                                    <Col span={12}>
+                                <Row style={{ marginBottom: 0 }} gutter={{md: 16, sm: 8, xs: 4}}>
+                                    <Col md={12} sm={16} xs={24}>
                                         <GroupSelectInput
                                             style={{ marginBottom: 0 }}
                                             label={
@@ -360,7 +360,7 @@ function CreateOrder() {
                                             </InlinedFormItem>
                                         </GroupSelectInput>
                                     </Col>
-                                    <Col span={12}>
+                                    <Col md={12} sm={16} xs={24}>
                                         <GroupSelectInput
                                             style={{ marginBottom: 0 }}
                                             label={
@@ -393,8 +393,8 @@ function CreateOrder() {
                                         </GroupSelectInput>
                                     </Col>
                                 </Row>
-                                <Row gutter={16}>
-                                    <Col span={12}>
+                                <Row gutter={{md: 16, sm: 8, xs: 4}}>
+                                    <Col md={12} sm={16} xs={24}>
                                         <GroupSelectInput
                                             style={{ marginBottom: 0 }}
                                             label={

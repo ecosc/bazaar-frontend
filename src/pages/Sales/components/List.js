@@ -137,13 +137,13 @@ function List({ isLoading, isLoadingMore, items, refresh, loadMore, hasMore }) {
             ellipsis: true,
             render: (v, item) => <BoldColumn>{transformTargetAmount(item.targetAsset, item.targetAmount)}</BoldColumn>
         },
-        {
-            title: t('Buyer'),
-            dataIndex: 'buyer',
-            key: 'buyer',
-            width: '10%',
-            render: (v, item) => item.buyer != AddressZero ? accountEllipsis(item.buyer) : '-'
-        },
+        // {
+        //     title: t('Buyer'),
+        //     dataIndex: 'buyer',
+        //     key: 'buyer',
+        //     width: '10%',
+        //     render: (v, item) => item.buyer != AddressZero ? accountEllipsis(item.buyer) : '-'
+        // },
         {
             title: t('OrderID'),
             dataIndex: 'id',
@@ -155,22 +155,32 @@ function List({ isLoading, isLoadingMore, items, refresh, loadMore, hasMore }) {
             title: t('CreatedAt'),
             key: 'created_at',
             width: '12%',
+            ellipsis: true,
             render: (v, item) => timestampInLocale(item.createdAt)
         },
         {
             title: t('Status'),
             dataIndex: 'state',
             key: 'state',
-            width: '12%',
+            width: '10%',
             ellipsis: true,
             render: (v, item) => orderStateInString(item.state)
         },
         {
             title: t('Actions'),
             key: 'actions',
+            ellipsis: true,
             render: (v, item) => {
                 return (
                     <Space direction='horizontal'>
+                        {item.buyer != AddressZero &&
+                            <ProfileInfoButton
+                                address={item.buyer}
+                                modalTitle={t('Buyer Info')}
+                                title={t('Buyer')}
+                                shape='circle'
+                            />
+                        }
                         {
                             item.state === orderStates.Placed &&
                             <Button
@@ -201,7 +211,7 @@ function List({ isLoading, isLoadingMore, items, refresh, loadMore, hasMore }) {
                             </Button>
                         }
                         {
-                            (isInWithdrawableState(item) && remainingTime(item) > 0) &&
+                            isInWithdrawableState(item) &&
                             <SuccessButton
                                 onClick={handleWithdrawClick(item)}
                                 disabled={!isItemWithdrawable(item)}
@@ -212,13 +222,6 @@ function List({ isLoading, isLoadingMore, items, refresh, loadMore, hasMore }) {
                                 <span>{t('Withdraw')}&nbsp;</span>
                                 <span>{isInWithdrawableState(item) && remainingTime(item) > 0 && <Timer initialValue={remainingTime(item)} />}</span>
                             </SuccessButton>
-                        }
-                        {item.buyer != AddressZero &&
-                            <ProfileInfoButton
-                                address={item.buyer}
-                                modalTitle={t('Buyer Info')}
-                                buttonTitle={t('Buyer')}
-                            />
                         }
                     </Space>
                 )
@@ -416,6 +419,7 @@ function List({ isLoading, isLoadingMore, items, refresh, loadMore, hasMore }) {
                     pagination={false}
                     size={'small'}
                     rowKey={'id'}
+                    scroll={{ x: 650, y: '100%' }}
                 />
                 {
                     hasMore &&
