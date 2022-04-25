@@ -21,7 +21,7 @@ const BazaarTable = styled(Table)`
         padding-bottom: 20px !important;
     }
 
-    & > .ant-spin-nested-loading > .ant-spin-container > .ant-table > .ant-table-container > .ant-table-header > table > thead > tr > th:last-child {
+    & > .ant-spin-nested-loading > .ant-spin-container > .ant-table > .ant-table-container > .ant-table-header > table > thead > tr > th:nth-last-child(2) {
         text-align: center;
     }
 
@@ -39,9 +39,9 @@ const BazaarTable = styled(Table)`
         color: #8D8B95 !important;
     }
 
-    & > .ant-spin-nested-loading > .ant-spin-container > .ant-table > .ant-table-container > .ant-table-content > table > tbody > tr > td:last-child {
-        text-align: center;
-    }
+    // & > .ant-spin-nested-loading > .ant-spin-container > .ant-table > .ant-table-container > .ant-table-body > table > tbody > tr > td:last-child {
+    //     text-align: center;
+    // }
 `;
 
 export default BazaarTable;
