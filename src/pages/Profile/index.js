@@ -1,11 +1,16 @@
 import { useWeb3React } from "@web3-react/core";
-import { EditOutlined, UserOutlined } from '@ant-design/icons';
-import { Card, Col, Typography, Space } from "antd";
+import { EditOutlined,
+    UserOutlined,
+    ArrowLeftOutlined,
+    ArrowRightOutlined
+} from '@ant-design/icons';
+import { Card, Col, Typography, Space, Button } from "antd";
 import CreateProfileButton from "components/CreateProfileButton";
 import { useProfile } from "hooks/useProfile";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import { getDirection } from "localization";
 
 const { Text } = Typography;
 
@@ -26,6 +31,13 @@ function Profile() {
     const { account } = useWeb3React();
     const navigate = useNavigate();
     const { hasProfile, profile, isLoading } = useProfile();
+    const dir = getDirection();
+
+    const backButton = () => {
+        const icon = dir === 'rtl' ? <ArrowLeftOutlined /> : <ArrowRightOutlined />;
+
+        return <Button onClick={() => navigate(-1)} icon={icon} type="primary" shape="circle" />
+    }
 
     return (
         <ProfileWrapper>
@@ -42,6 +54,7 @@ function Profile() {
                     actions={[
                         <EditOutlined key="edit" onClick={() => navigate('/profile/edit')} />
                     ]}
+                    extra={backButton()}
                 >
                     {
                         (!hasProfile || !account) ? <CreateProfileButton /> :
