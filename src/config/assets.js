@@ -42,6 +42,14 @@ export const sourceAssets = {
     COPPER: 33,
     ZINC: 34,
     ALUMINIUM: 35,
+    YUAN: 36,
+    EURO: 37,
+    CANADIAN_DOLLAR: 38,
+    SWISS_FRANC: 39,
+    KUWAITI_DINAR: 40,
+    QATARI_RIAL: 41,
+    CEMENT: 42,
+    REBAR: 43
 };
 
 export const sourceAssetNames = {
@@ -81,6 +89,14 @@ export const sourceAssetNames = {
     [sourceAssets.COPPER]: 'Copper',
     [sourceAssets.ZINC]: 'Zinc',
     [sourceAssets.ALUMINIUM]: 'Aluminium',
+    [sourceAssets.YUAN]: 'Yuan',
+    [sourceAssets.EURO]: 'Euro',
+    [sourceAssets.CANADIAN_DOLLAR]: 'Canadian Dollar',
+    [sourceAssets.SWISS_FRANC]: 'Swiss Franc',
+    [sourceAssets.KUWAITI_DINAR]: 'Kuwaiti Dinar',
+    [sourceAssets.QATARI_RIAL]: 'Qatari Rial',
+    [sourceAssets.CEMENT]: 'Cement',
+    [sourceAssets.REBAR]: 'Rebar',
 };
 
 export const units = {
@@ -119,6 +135,22 @@ export const units = {
     LIRA: {
         id: 'LIRA',
         symbol: 'Lira'
+    },
+    YUAN: {
+        id: 'YUAN',
+        symbol: 'Yuan'
+    },
+    EURO: {
+        id: 'EURO',
+        symbol: 'Euro'
+    },
+    RIAL: {
+        id: 'RIAL',
+        symbol: 'Rial'
+    },
+    FRANC: {
+        id: 'FRANC',
+        symbol: 'Franc'
     },
     COIN: {
         id: 'COIN',
@@ -167,6 +199,14 @@ export const sourceAssetsUnits = {
     [sourceAssets.COPPER]: [units.TONNAGE],
     [sourceAssets.ZINC]: [units.TONNAGE],
     [sourceAssets.ALUMINIUM]: [units.TONNAGE],
+    [sourceAssets.YUAN]: [units.TONNAGE],
+    [sourceAssets.EURO]: [units.EURO],
+    [sourceAssets.CANADIAN_DOLLAR]: [units.DOLLAR],
+    [sourceAssets.SWISS_FRANC]: [units.FRANC],
+    [sourceAssets.KUWAITI_DINAR]: [units.DINAR],
+    [sourceAssets.QATARI_RIAL]: [units.RIAL],
+    [sourceAssets.CEMENT]: [units.TONNAGE],
+    [sourceAssets.REBAR]: [units.TONNAGE],
 };
 
 export const bazaars = {
@@ -196,7 +236,13 @@ export const bazaars = {
             sourceAssets.MANAT,
             sourceAssets.DIRHAM,
             sourceAssets.DINAR_IRAQI,
-            sourceAssets.TURKISH_LIRA
+            sourceAssets.TURKISH_LIRA,
+            sourceAssets.YUAN,
+            sourceAssets.EURO,
+            sourceAssets.CANADIAN_DOLLAR,
+            sourceAssets.SWISS_FRANC,
+            sourceAssets.KUWAITI_DINAR,
+            sourceAssets.QATARI_RIAL,
         ]
     },
     PETROCHEMICAL: {
@@ -231,7 +277,9 @@ export const bazaars = {
             sourceAssets.IRON_PELLET,
             sourceAssets.COPPER,
             sourceAssets.ZINC,
-            sourceAssets.ALUMINIUM
+            sourceAssets.ALUMINIUM,
+            sourceAssets.CEMENT,
+            sourceAssets.REBAR,
         ]
     },
 };
