@@ -14,8 +14,8 @@ import { connectorLocalStorageKey } from 'constants/connectors';
 import { connectorNames, connectorsByName } from 'iweb3';
 import { setupNetwork } from 'iweb3/wallet';
 import { useTranslation } from 'react-i18next'
-import { message } from 'antd'
 import { resetProfile } from 'state/profile';
+import { notifyError } from 'utils/notification';
 
 const useAuth = () => {
     const { t } = useTranslation();
@@ -37,7 +37,7 @@ const useAuth = () => {
                         window.localStorage.removeItem(connectorLocalStorageKey);
 
                         if (error instanceof NoEthereumProviderError || error instanceof NoBscProviderError) {
-                            message.error(t('No provider was found'));
+                            notifyError(t('Error'), t('No provider was found'));
                         } else if (
                             error instanceof UserRejectedRequestErrorInjected ||
                             error instanceof UserRejectedRequestErrorWalletConnect
@@ -45,14 +45,14 @@ const useAuth = () => {
                             if (connector instanceof WalletConnectConnector) {
                                 connector.walletConnectProvider = null;
                             }
-                            message.error(t('Please authorize to access your account'));
+                            notifyError(t('Error'), t('Please authorize to access your account'));
                         } else {
-                            message.error(t(error.message));
+                            notifyError(t('Error'), t(error.message));
                         }
                     }
                 })
             } else {
-                message.error(t('The connector config is wrong'));
+                notifyError(t('Error'), t('The connector config is wrong'));
             }
         },
         [t, activate],

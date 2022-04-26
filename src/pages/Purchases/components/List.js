@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { DownOutlined, CheckOutlined, CloseCircleOutlined } from '@ant-design/icons';
-import { Collapse, Typography, Modal, Space, message, Button } from "antd";
+import { Collapse, Typography, Modal, Space, Button } from "antd";
 import styled from "styled-components";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -16,6 +16,7 @@ import BazaarTable from 'components/BazaarTable';
 import SuccessButton from 'components/SucessButton';
 import { getTokenByAddress } from 'constants/tokens';
 import { getDirection } from 'localization';
+import { notifyError, notifySuccess } from 'utils/notification';
 
 const { Text } = Typography;
 const { confirm } = Modal;
@@ -276,11 +277,11 @@ function List({ isLoading, isLoadingMore, items, refresh, loadMore, hasMore }) {
                 onOk() {
                     return bazaarContract.approveDelivery(item.id).
                         then(() => {
-                            message.success(t("Delivery approvement requested"));
+                            notifySuccess(t("Delivery approvement requested"), t("Your delivery approvement request is created"));
                         }).
                         catch(e => {
                             console.error(e);
-                            message.error(t('Error while approving item delivery'));
+                            notifyError(t('Error'), t('Error while approving item delivery'));
                         });
                 },
             });
@@ -333,11 +334,11 @@ function List({ isLoading, isLoadingMore, items, refresh, loadMore, hasMore }) {
                 onOk() {
                     return bazaarContract.cancelForBuyer(item.id).
                         then(() => {
-                            message.success(t("Order cancel requested"));
+                            notifySuccess(t("Order cancel requested"), t("Your request to cancel order is created"));
                         }).
                         catch(e => {
                             console.error(e);
-                            message.error(t('Error while cancelling item'));
+                            notifyError(t('Error'), t('Error while cancelling item'));
                         });
                 },
             });

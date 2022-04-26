@@ -1,10 +1,10 @@
 import { useWeb3React } from "@web3-react/core";
-import { Button, Card, Col, Form, Input, message, Typography, Modal, Space, Alert } from "antd";
+import { Card, Col, Form, Input, Typography, Modal, Space, Alert } from "antd";
 import { UserOutlined } from '@ant-design/icons';
 import ConnectWalletButton from "components/ConnectWalletButton";
 import { useProfileContract } from "hooks/useContracts";
 import { useProfile } from "hooks/useProfile";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from 'react-redux';
@@ -17,6 +17,7 @@ import { transformTargetAmount } from "utils/transforms";
 import { APPROVE_STATES, useApproveToken } from "hooks/useApproveToken";
 import { PROFILE_ADDRESS } from "constants/addresses";
 import SubmitButton from "components/SubmitButton";
+import { notifyError, notifySuccess } from "utils/notification";
 
 const { Text } = Typography;
 const { confirm } = Modal;
@@ -91,14 +92,14 @@ function CreateProfile() {
             okButtonProps: { disabled: !canAfford },
             onOk() {
                 return profileContract.createAccount(name, contact).then(r => {
-                    message.success(t('Account created'));
+                    notifySuccess(t('Account created'), t('Your account created successfully'));
                     dispatch(setProfile({
                         name,
                         contact
                     }));
                     navigate('/profile');
                 }).catch(e => {
-                    message.error(t('Error while creating account'));
+                    notifyError(t('Error'), t('Error while creating account'));
                 });
             },
         });

@@ -16,6 +16,7 @@ import { getBazaarForAsset, sourceAssetNames } from 'config/assets';
 import BazaarTable from 'components/BazaarTable';
 import SuccessButton from 'components/SucessButton';
 import { getTokenByAddress } from 'constants/tokens';
+import { notifyError, notifySuccess } from 'utils/notification';
 
 const { Text } = Typography;
 const { confirm } = Modal;
@@ -356,12 +357,12 @@ function List({ isLoading, isLoadingMore, items, refresh, loadMore, hasMore }) {
                 onOk() {
                     return bazaarContract.close(item.id).
                         then(() => {
-                            message.success(t("Order close requested"));
+                            notifySuccess(t("Order close requested"), t('Your request to close order created'));
                             refresh();
                         }).
                         catch(e => {
                             console.error(e);
-                            message.error(t('Error while closing order'));
+                            notifyError(t('Error'), t('Error while closing order'));
                         });
                 },
             });
@@ -377,12 +378,12 @@ function List({ isLoading, isLoadingMore, items, refresh, loadMore, hasMore }) {
                 onOk() {
                     return bazaarContract.cancelForSeller(item.id).
                         then(() => {
-                            message.success(t("Order cancel requested"));
+                            notifySuccess(t('Order cancel requested'), t('Your request to cancel order is created'));
                             refresh();
                         }).
                         catch(e => {
                             console.error(e);
-                            message.error(t('Error while cancelling order'));
+                            notifyError(t('Error'), t('Error while cancelling item'));
                         });
                 },
             });
@@ -397,12 +398,12 @@ function List({ isLoading, isLoadingMore, items, refresh, loadMore, hasMore }) {
                 onOk() {
                     return bazaarContract.withdraw(item.id).
                         then(() => {
-                            message.success(t("Order withdrew requested"));
+                            notifySuccess(t("Order withdrew requested"), t("Your request to withdrew order is created"));
                             refresh();
                         }).
                         catch(e => {
                             console.error(e);
-                            message.error(t('Error while withdrew guarantee amount'));
+                            notifyError(t('Error'), t('Error while withdrew guarantee amount'));
                         });
                 },
             });

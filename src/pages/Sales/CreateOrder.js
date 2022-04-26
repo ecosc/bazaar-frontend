@@ -27,6 +27,7 @@ import { bazaars, sourceAssetNames, sourceAssets, sourceAssetsUnits, units } fro
 import { BIG_ZERO } from "utils/bigNumber";
 import { getTokenBalance } from "hooks/useTokenBalance";
 import SubmitButton from "components/SubmitButton";
+import { notifyError, notifySuccess } from "utils/notification";
 
 const { Option, OptGroup } = Select;
 const { confirm } = Modal;
@@ -219,10 +220,10 @@ function CreateOrder() {
                     targetAmount,
                     timeout
                 ).then(() => {
-                    message.success(t('Order created'));
+                    notifySuccess(t('Order created'), t('Your new order created successfully'));
                     navigate('/sales');
                 }).catch(e => {
-                    message.error(t('Error while placing order'));
+                    notifyError(t('Error'), t('Error while placing order'))
                 });
             },
         });

@@ -5,6 +5,7 @@ import { utils } from "ethers";
 import { hexZeroPad } from "ethers/lib/utils";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { notifySuccess } from "utils/notification";
 import { useBazaarContract } from "./useContracts";
 
 function baseFilter(method, account) {
@@ -41,12 +42,10 @@ export function useNotifyOnOrderPlaced(callback = null) {
   const filter = baseFilter('OrderPlaced(uint256,address)', account);
 
   useNotifyOn(filter, (orderID, seller) => {
-    notification.success({
-      message: t('New order placed'),
-      description: t('A new order with id ({{id}}) placed for you just right now', { id: orderID }),
-      duration: 3,
-      placement: "topRight"
-    });
+    notifySuccess(
+      t('New order placed'),
+      t('A new order with id ({{id}}) placed for you just right now', { id: orderID })
+    );
 
     callback && callback(orderID, seller);
   })
@@ -58,12 +57,10 @@ export function useNotifyOnOrderClosed(callback = null) {
   const filter = baseFilter('OrderClosed(uint256,address)', account);
 
   useNotifyOn(filter, () => {
-    notification.success({
-      message: t('Order closed'),
-      description: t('order closed successfully'),
-      duration: 3,
-      placement: "topRight"
-    });
+    notifySuccess(
+      t('Order closed'),
+      t('order closed successfully')
+    );
 
     callback && callback();
   })
@@ -75,12 +72,10 @@ export function useNotifyOnOrderCancelledBySeller(callback = null) {
   const filter = baseFilter('OrderCancelledBuySeller(uint256,address)', account);
 
   useNotifyOn(filter, () => {
-    notification.success({
-      message: t('Order cancelled'),
-      description: t('order was cancelled successfully'),
-      duration: 3,
-      placement: "topRight"
-    });
+    notifySuccess(
+      t('Order cancelled'),
+      t('order was cancelled successfully')
+    );
 
     callback && callback();
   })
@@ -92,12 +87,10 @@ export function useNotifyOnOrderCancelledByBuyer(callback = null) {
   const filter = baseFilter('OrderCancelledBuyBuyer(uint256,address)', account);
 
   useNotifyOn(filter, () => {
-    notification.success({
-      message: t('Order cancelled'),
-      description: t('order was cancelled successfully'),
-      duration: 3,
-      placement: "topRight"
-    });
+    notifySuccess(
+      t('Order cancelled'),
+      t('order was cancelled successfully')
+    );
 
     callback && callback();
   })
@@ -109,13 +102,10 @@ export function useNotifyOnOrderWithdrew(callback = null) {
   const filter = baseFilter('OrderWithdrew(uint256,address)', account);
 
   useNotifyOn(filter, () => {
-    console.log()
-    notification.success({
-      message: t('Order withdrew'),
-      description: t('order was withdrew successfully'),
-      duration: 3,
-      placement: "topRight"
-    });
+    notifySuccess(
+      t('Order withdrew'),
+      t('order was withdrew successfully')
+    );
 
     callback && callback();
   })
@@ -127,12 +117,10 @@ export function useNotifyOnOrderSold(callback = null) {
   const filter = baseFilter('OrderSold(uint256,address)', account);
 
   useNotifyOn(filter, () => {
-    notification.success({
-      message: t('Order bought'),
-      description: t('order was bought successfully'),
-      duration: 3,
-      placement: "topRight"
-    });
+    notifySuccess(
+      t('Order bought'),
+      t('order was bought successfully')
+    );
 
     callback && callback();
   })
@@ -144,12 +132,10 @@ export function useNotifyOnDeliveryApproved(callback = null) {
   const filter = baseFilter('DeliveryApproved(uint256,address)', account);
 
   useNotifyOn(filter, () => {
-    notification.success({
-      message: t('Delivery approved'),
-      description: t('delivery of order was approved successfully'),
-      duration: 3,
-      placement: "topRight"
-    });
+    notifySuccess(
+      t('Delivery approved'),
+      t('delivery of order was approved successfully')
+    );
 
     callback && callback();
   })

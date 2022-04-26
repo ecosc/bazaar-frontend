@@ -182,5 +182,21 @@
     "Lifetime is required": "زمان اعتبار اجباریست",
     "Enter amount": "مقدار کالا",
     "Enter your price": "مبلغ مورد نظر",
-    "Enter lifetime": "مدت اعتبار"
+    "Enter lifetime": "مدت اعتبار",
+    "Your order buy requested successfully": "سفارش خرید شما با موفقیت ثبت شد",
+    "Error": "خطا",
+    "Token approve error": "خطا در تایید توکن",
+    "Error while approving token": "خطا در حین تایید توکن",
+    "Your account created successfully": "حساب کاربری شما با موفقیت ایجاد شده",
+    "Your account info updated successfully": "اطلاعات حساب کاربری شما با موفقیت به روزرسانی شد",
+    "Your delivery approvement request is created": "درخواست تایید تحویل با موفقیت ثبت شد",
+    "Error while approving item delivery": "خطا در تایید تحویل کالا",
+    "Your request to cancel order is created": "درخواست لغو سفارش با موفقیت ثبت شد",
+    "Error while cancelling item": "خطا در ثبت درخواست لغو سفارش",
+    "Your new order created successfully": "سفارش جدید شما با موفقیت ثبت شد",
+    "Error while placing order": "خطا در ثبت اطلاعات سفارش جدید",
+    "Your request to close order created": "درخواست شما برای بستن سفارش ثبت شد",
+    "Error while closing order": "خطا در ثبت درخواست بستن سفارش",
+    "Your request to withdrew order is created": "درخواست شما برای برداشت مبلغ گارانتی ثبت شد",
+    "Error while withdrew guarantee amount": "خطا در ثبت درخواست برداشت مبلغ گارانتی"
 }

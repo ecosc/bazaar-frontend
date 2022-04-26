@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import { getTokenBalance } from "hooks/useTokenBalance";
 import { BIG_ZERO } from "utils/bigNumber";
 import { BAZAAR_ADDRESS } from "constants/addresses";
+import { notifyError, notifySuccess } from "utils/notification";
 
 const { Text } = Typography;
 const { confirm } = Modal;
@@ -87,12 +88,18 @@ function BuyButton({ item, ...props }) {
             onOk() {
                 return bazaarContract.buy(item.id).
                     then(() => {
-                        message.success(t("Order buy requested"));
+                        notifySuccess(
+                            t("Order buy requested"),
+                            t("Your order buy requested successfully"),
+                        );
                         navigate('/purchases');
                     }).
                     catch(e => {
                         console.error(e);
-                        message.error(t('Error while buying order'));
+                        notifyError(
+                            t('Error'),
+                            t('Error while buying order')
+                        );
                     });
             },
         });

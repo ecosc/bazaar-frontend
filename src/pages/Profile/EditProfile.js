@@ -4,7 +4,7 @@ import {
     ArrowRightOutlined,
     UserOutlined
 } from '@ant-design/icons';
-import { Button, Card, Col, Divider, Form, Input, message } from "antd";
+import { Button, Card, Col, Divider, Form, Input } from "antd";
 import ConnectWalletButton from "components/ConnectWalletButton";
 import { useProfileContract } from "hooks/useContracts";
 import { useProfile } from "hooks/useProfile";
@@ -17,6 +17,7 @@ import styled from "styled-components";
 import CreateProfileButton from "components/CreateProfileButton";
 import { getDirection } from "localization";
 import SubmitButton from "components/SubmitButton";
+import { notifyError, notifySuccess } from "utils/notification";
 
 const ProfileWrapper = styled.div`
     width: 100%;
@@ -74,12 +75,12 @@ function EditProfile() {
         const contact = values.contact;
 
         profileContract.updateAccount(name, contact).then(r => {
-            message.success(t('Account updated'));
+            notifySuccess(t('Account updated'), t('Your account info updated successfully'));
             dispatch(setProfile({ name, contact }));
             navigate('/profile');
         }).catch(e => {
             setIsLoading(false);
-            message.error(t('Error while updating account'));
+            notifyError(t('Error'), t('Error while updating account'));
         });
     }
 

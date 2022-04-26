@@ -7,6 +7,7 @@ import { getBep20Contract } from "./useContracts";
 import { MaxUint256 } from '@ethersproject/constants';
 import { BigNumber } from "ethers";
 import { BIG_ZERO } from "utils/bigNumber";
+import { notifyError } from "utils/notification";
 
 export const APPROVE_STATES = {
     NONE: 0,
@@ -34,7 +35,7 @@ export function useApproveToken(onApproved, onRejected) {
                         setState(APPROVE_STATES.APPROVED);
                         onApproved && onApproved(additionalParams);
                     }).catch(e => {
-                        message.error(t('Token approve error'));
+                        notifyError(t('Error'), t('Token approve error'))
                         console.error(e);
                         setState(APPROVE_STATES.ERROR);
                         onRejected && onRejected(e, additionalParams);
@@ -64,7 +65,7 @@ export function useApproveToken(onApproved, onRejected) {
                 onApproved && onApproved(additionalParams);
             }).catch(e => {
                 console.error(e);
-                message.error(t('Error while approving token'));
+                notifyError(t('Error'), t('Error while approving token'))
                 setState(APPROVE_STATES.ERROR);
                 onRejected && onRejected(e, additionalParams);
             });
