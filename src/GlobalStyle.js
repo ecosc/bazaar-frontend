@@ -459,11 +459,17 @@ const GlobalStyle = createGlobalStyle`
     padding: 10px;
     font-weight: bold;
     position: absolute;
-    left: 20px;
     top: -25px;
     z-index: 10000;
     display: inline-block;
     font-size: 1.8rem;
+    ${({ theme }) => theme.dir == 'ltr' && `
+      left: 20px;
+    `}
+
+    ${({ theme }) => theme.dir == 'rtl' && `
+      right: 20px !important;
+    `}
   }
 
   .ant-notification-notice > .ant-notification-notice-content > .ant-notification-notice-with-icon > .ant-notification-notice-icon:before {
@@ -513,6 +519,11 @@ const GlobalStyle = createGlobalStyle`
   .ant-notification-notice > .ant-notification-notice-close {
     color: white;
     font-size: 1.3rem;
+
+    ${({ theme }) => theme.dir == 'rtl' && `
+      left: 22px;
+      right: unset !important;
+    `}
   }
 
   .ant-notification-notice {
