@@ -21,7 +21,7 @@ const BazaarTable = styled(Table)`
         padding-bottom: 20px !important;
     }
 
-    & > .ant-spin-nested-loading > .ant-spin-container > .ant-table > .ant-table-container > .ant-table-header > table > thead > tr > th:nth-last-child(2) {
+    & > .ant-spin-nested-loading > .ant-spin-container > .ant-table > .ant-table-container > .ant-table-header > table > thead > tr > th:last-child {
         text-align: center;
     }
 
