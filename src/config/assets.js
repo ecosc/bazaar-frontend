@@ -199,7 +199,7 @@ export const sourceAssetsUnits = {
     [sourceAssets.COPPER]: [units.TONNAGE],
     [sourceAssets.ZINC]: [units.TONNAGE],
     [sourceAssets.ALUMINIUM]: [units.TONNAGE],
-    [sourceAssets.YUAN]: [units.TONNAGE],
+    [sourceAssets.YUAN]: [units.YUAN],
     [sourceAssets.EURO]: [units.EURO],
     [sourceAssets.CANADIAN_DOLLAR]: [units.DOLLAR],
     [sourceAssets.SWISS_FRANC]: [units.FRANC],

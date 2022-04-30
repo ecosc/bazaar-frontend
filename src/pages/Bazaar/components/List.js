@@ -9,7 +9,7 @@ import BuyButton from "components/BuyButton";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { accountEllipsis, secondsToTime, transformSourceAmount, transformTargetAmount } from "utils/transforms";
-import { orderStateInString } from 'utils/order';
+import { orderStateInString, orderStates } from 'utils/order';
 import { getBazaarByID, sourceAssetNames } from 'config/assets';
 import ProfileInfoButton from 'components/ProfileInfoButton';
 import BazaarTable from 'components/BazaarTable';
@@ -161,7 +161,7 @@ function List({ isLoading, items, refresh, loadMore, isLoadingMore, hasMore, cur
                 const now = Date.now();
                 const remainingTime = Math.floor(item.deadline - (now / 1000));
 
-                if (remainingTime <= 0) {
+                if (remainingTime <= 0 || item.state !== orderStates.Placed) {
                     return <span style={{ color: '#C63B3B' }}>{t('Expired')}</span>
                 }
 
